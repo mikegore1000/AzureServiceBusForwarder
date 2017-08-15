@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using Newtonsoft.Json;
 using NServiceBus;
 
 namespace Payments
@@ -17,12 +18,15 @@ namespace Payments
         private const int NumberOfFactories = 10; // TODO: Make this configurable
         private const int MaxConcurrentCalls = 100; // TODO: Make this configurable
 
-        private readonly string connectionString;
+        private readonly string sourceConnectionString;
+        private readonly string destinationConnectionString;
+
         private readonly string topicName;
         private readonly string subscriberName;
-        private readonly IEndpointInstance endpoint;
+        private readonly IMessageSession endpoint;
         private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly List<QueueClient> clients = new List<QueueClient>();
+        private QueueClient destinationQueueClient;
         
 
         private static readonly List<string> IgnoredHeaders = new List<string>
@@ -30,9 +34,10 @@ namespace Payments
             "NServiceBus.Transport.Encoding" // Don't assume endpoint forwarding into uses the same serialization
         };
 
-        public Forwarder(string connectionString, string topicName, string subscriberName, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
+        public Forwarder(string sourceConnectionString, string topicName, string destinationConnectionString, string subscriberName, IMessageSession endpoint, Func<BrokeredMessage, Type> messageMapper)
         {
-            this.connectionString = connectionString;
+            this.sourceConnectionString = sourceConnectionString;
+            this.destinationConnectionString = destinationConnectionString;
             this.topicName = topicName;
             this.subscriberName = subscriberName;
             this.endpoint = endpoint;
@@ -42,7 +47,8 @@ namespace Payments
         public async Task Start()
         {
             await CreateSubscriptionIfRequired();
-            CreateQueueClients();
+            CreateSourceQueueClients();
+            CreateDestinationQueueClient();
             Poll();
         }
 
@@ -50,9 +56,11 @@ namespace Payments
         {
             foreach (var c in clients)
             {
-                c.OnMessageAsync(OnMessage, new OnMessageOptions { MaxConcurrentCalls = MaxConcurrentCalls });
+                c.OnMessageAsync(OnMessage, new OnMessageOptions { MaxConcurrentCalls = MaxConcurrentCalls, AutoComplete = true }); // Can't auto complete if batching!
             }
         }
+
+        private static int MessagesForwarded;
 
         private async Task OnMessage(BrokeredMessage message)
         {
@@ -60,42 +68,57 @@ namespace Payments
             // TODO: Need to look at pulling in batches
             // TODO: Add logging
             var messageType = messageMapper(message);
-            var body = GetMessageBody(messageType, message);
-            var sendOptions = new SendOptions();
-            sendOptions.SetDestination(subscriberName);
+            var body = GetMessageBody(messageType, message); // TODO: Optimise this, do we even need to convert?
+            //var jsonBody = JsonConvert.SerializeObject(body);
 
-            foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+            var serializer = new Newtonsoft.Json.JsonSerializer();
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream, Encoding.UTF8);
+            serializer.Serialize(writer, body);
+            writer.Flush();
+            stream.Position = 0;
+
+            var destinationMessage = new BrokeredMessage(stream, true);
+
+            // foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+            foreach (var p in message.Properties) // TODO: Add in expected headers
             {
-                sendOptions.SetHeader(p.Key, p.Value.ToString());
+                destinationMessage.Properties.Add(p.Key, p.Value);
             }
 
-            await endpoint.Send(body, sendOptions);
+            await destinationQueueClient.SendAsync(destinationMessage);
+
+            var forwarded = Interlocked.Increment(ref MessagesForwarded);
+            if (forwarded % 100 == 0)
+            {
+                Console.WriteLine($"Forwarded {forwarded} messages");
+            }
         }
 
-        private void CreateQueueClients()
+        private void CreateSourceQueueClients()
         {
             for (int i = 0; i < NumberOfFactories; i++)
             {
-                var client = QueueClient.CreateFromConnectionString(connectionString, subscriberName);
+                var client = QueueClient.CreateFromConnectionString(sourceConnectionString, subscriberName);
                 client.PrefetchCount = PrefetchCount;
 
                 clients.Add(client);
             }
         }
 
+        private void CreateDestinationQueueClient()
+        {
+            destinationQueueClient = QueueClient.CreateFromConnectionString(destinationConnectionString, subscriberName);
+        }
+
         public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
         {
-            var stream = brokeredMessage.GetBody<Stream>();
-            var serializer = new DataContractSerializer(type);
-            using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
-            {
-                return serializer.ReadObject(reader);
-            }
+            return JsonConvert.DeserializeObject(brokeredMessage.GetBody<string>(), type);
         }
 
         private async Task CreateSubscriptionIfRequired()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(sourceConnectionString);
 
             if (!await namespaceManager.QueueExistsAsync(subscriberName))
             {

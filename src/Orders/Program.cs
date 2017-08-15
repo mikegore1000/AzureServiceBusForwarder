@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using Newtonsoft.Json;
 using Orders.Events;
 
 namespace Orders
@@ -48,7 +49,9 @@ namespace Orders
 
             for (int i = 0; i < messageCount; i++)
             {
-                var message = new BrokeredMessage(new OrderAccepted {OrderReference = Guid.NewGuid()});
+                var @event = new OrderAccepted {OrderReference = Guid.NewGuid()};
+                var eventJson = JsonConvert.SerializeObject(@event);
+                var message = new BrokeredMessage(eventJson);
                 message.Properties["Asos.EnclosedType"] = "Orders.Events.OrderAccepted";
                 // Can get rid of these properties as we can bridge on Asos.EnclosedType, but it still works with these headers in place for NSB <-> NSB integration
                 message.Properties["NServiceBus.EnclosedMessageTypes"] = "Orders.Events.OrderAccepted";

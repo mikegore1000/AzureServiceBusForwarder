@@ -42,14 +42,11 @@ namespace Payments
             var globalConcurrency = numberOfReceivers * perReceiverConcurrency;
 
             endpointConfig.LimitMessageProcessingConcurrencyTo(globalConcurrency);
-            receivers.PrefetchCount(100);
+            receivers.PrefetchCount(500);
             factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3); //Bus receiver, forwarder sender, bus sender
             transport.NumberOfClientsPerEntity(numberOfReceivers);
-
-            factories.BatchFlushInterval(TimeSpan.Zero);
-            
-
-
+            factories.BatchFlushInterval(TimeSpan.FromMilliseconds(100));
+           
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(
                 ordersConnectionString,

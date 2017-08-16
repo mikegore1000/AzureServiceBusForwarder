@@ -46,7 +46,8 @@ namespace Payments
             factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3); //Bus receiver, forwarder sender, bus sender
             transport.NumberOfClientsPerEntity(numberOfReceivers);
             factories.BatchFlushInterval(TimeSpan.FromMilliseconds(100));
-           
+            transport.Transactions(TransportTransactionMode.ReceiveOnly); // Use peek lock
+
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(
                 ordersConnectionString,

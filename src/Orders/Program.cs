@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
@@ -41,8 +42,19 @@ namespace Orders
                     return;
                 }
 
-                
-                await SendMessages(messageCount);
+                int totalMessages = messageCount;
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                do
+                {
+                    var blockSize = messageCount >= 500 ? 500 : messageCount;
+                    await SendMessages(blockSize);
+                    messageCount -= blockSize;
+                } while (messageCount > 0);                
+
+                stopWatch.Stop();
+                Console.WriteLine($"Took {stopWatch.Elapsed} to send {totalMessages}");
             }
         }
 
@@ -62,6 +74,8 @@ namespace Orders
             }
 
             await topicClient.SendBatchAsync(messages);
+
+            Console.WriteLine($"Sent block of {messageCount} messages");
         }
 
         private static async Task CreateTopic()

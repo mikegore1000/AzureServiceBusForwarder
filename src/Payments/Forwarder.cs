@@ -16,7 +16,7 @@ namespace Payments
     {
         private const int PrefetchCount = 100; // TODO: Make this configurable
         private const int NumberOfFactories = 10; // TODO: Make this configurable
-        private const int MaxConcurrentCalls = 100; // TODO: Make this configurable
+        private const int ReceiveBatchSize = 500;  // TODO: Make this configurable
 
         private readonly string connectionString;
         private readonly string topicName;
@@ -65,7 +65,7 @@ namespace Payments
         {
             while (true)
             {
-                var messages = await client.ReceiveBatchAsync(100); // TODO: Make configurable
+                var messages = await client.ReceiveBatchAsync(ReceiveBatchSize); // TODO: Make configurable
                 var sentMessageTokens = new List<Guid>();
                 var sendTasks = new List<Task>();
 

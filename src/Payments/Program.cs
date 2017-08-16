@@ -43,7 +43,7 @@ namespace Payments
 
             endpointConfig.LimitMessageProcessingConcurrencyTo(globalConcurrency);
             receivers.PrefetchCount(100);
-            factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3);
+            factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3); //Bus receiver, forwarder sender, bus sender
             transport.NumberOfClientsPerEntity(numberOfReceivers);
 
             factories.BatchFlushInterval(TimeSpan.Zero);

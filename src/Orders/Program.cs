@@ -9,13 +9,17 @@ namespace Orders
 {
     class Program
     {
-        private const string ConnectionString = "Endpoint=sb://asb-orders.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=3FCJyb5w6ixTgeUl9Cgb/eoiAP12ewB+BPG5V90sONU=";
         private const string TopicName = "Returns";
-        private static readonly TopicClient topicClient = TopicClient.CreateFromConnectionString(ConnectionString, TopicName);
+
+        private static string connectionString;
+        private static TopicClient topicClient;
 
         static void Main()
         {
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
+
+            connectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.User);
+            topicClient = TopicClient.CreateFromConnectionString(connectionString, TopicName);
 
             MainAsync().Wait();
 
@@ -62,7 +66,7 @@ namespace Orders
 
         private static async Task CreateTopic()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             if (!await namespaceManager.TopicExistsAsync(TopicName))
             {
                 await namespaceManager.CreateTopicAsync(new TopicDescription(TopicName));

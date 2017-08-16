@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NServiceBus;
 using Orders.Events;
@@ -7,11 +8,18 @@ namespace Payments.Handlers
 {
     public class OrderAcceptedHandler : IHandleMessages<OrderAccepted>
     {
+        private static int ordersAccepted;
+
         public Task Handle(OrderAccepted message, IMessageHandlerContext context)
         {
-            Console.WriteLine($"Accepted order {message.OrderReference}");
+            var acceptedCount = Interlocked.Increment(ref ordersAccepted);
 
-            return Task.FromResult(0);
+            if (acceptedCount % 100 == 0)
+            {
+                Console.WriteLine($"Accepted {acceptedCount} orders");
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

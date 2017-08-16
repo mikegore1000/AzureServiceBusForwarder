@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NServiceBus;
+using NServiceBus.Config;
 using NServiceBus.Logging;
 
 namespace Payments
@@ -32,7 +33,22 @@ namespace Payments
             endpointConfig.SendFailedMessagesTo("error");
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();
             transport.ConnectionString(paymentsConnectionString);
-            transport.UseForwardingTopology();            
+            transport.UseForwardingTopology();
+            var factories = transport.MessagingFactories();
+            var receivers = transport.MessageReceivers();
+
+            var perReceiverConcurrency = 10;
+            var numberOfReceivers = 2; // Premium messaging has 2 partitions
+            var globalConcurrency = numberOfReceivers * perReceiverConcurrency;
+
+            endpointConfig.LimitMessageProcessingConcurrencyTo(globalConcurrency);
+            receivers.PrefetchCount(100);
+            factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3);
+            transport.NumberOfClientsPerEntity(numberOfReceivers);
+
+            factories.BatchFlushInterval(TimeSpan.Zero);
+            
+
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(

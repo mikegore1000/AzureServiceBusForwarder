@@ -10,7 +10,7 @@ namespace Payments.Handlers
         public Task Handle(PaymentAccepted message, IMessageHandlerContext context)
         {
             Console.WriteLine($"Payment accepted {message.PaymentReference}");
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.ServiceBus;
@@ -43,33 +44,54 @@ namespace Payments
         {
             await CreateSubscriptionIfRequired();
             CreateQueueClients();
-            Poll();
+            await Poll();
         }
 
-        private void Poll()
+        private async Task Poll()
         {
+            var clientTasks = new List<Task>();
+
             foreach (var c in clients)
             {
-                c.OnMessageAsync(OnMessage, new OnMessageOptions { MaxConcurrentCalls = MaxConcurrentCalls });
+                clientTasks.Add(PollClient(c));
             }
+
+            await Task.WhenAll(clientTasks.ToArray());
         }
 
-        private async Task OnMessage(BrokeredMessage message)
+        private static int forwardedMessages;
+
+        private async Task PollClient(QueueClient client) // TODO: Support cancellation
         {
-            // TODO: Optimise performance based on this https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-performance-improvements
-            // TODO: Need to look at pulling in batches
-            // TODO: Add logging
-            var messageType = messageMapper(message);
-            var body = GetMessageBody(messageType, message);
-            var sendOptions = new SendOptions();
-            sendOptions.SetDestination(subscriberName);
-
-            foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+            while (true)
             {
-                sendOptions.SetHeader(p.Key, p.Value.ToString());
-            }
+                var messages = await client.ReceiveBatchAsync(100); // TODO: Make configurable
+                var sentMessageTokens = new List<Guid>();
+                var sendTasks = new List<Task>();
 
-            await endpoint.Send(body, sendOptions);
+                foreach (var message in messages)
+                {
+                    var messageType = messageMapper(message);
+                    var body = GetMessageBody(messageType, message);
+                    var sendOptions = new SendOptions();
+                    sendOptions.SetDestination(subscriberName);
+
+                    foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+                    {
+                        sendOptions.SetHeader(p.Key, p.Value.ToString());
+                    }
+
+                    sendTasks.Add(endpoint.Send(body, sendOptions));
+                    sentMessageTokens.Add(message.LockToken);
+                }
+
+                await Task.WhenAll(sendTasks).ConfigureAwait(false);
+                await client.CompleteBatchAsync(sentMessageTokens);
+
+                var forwardedCount = Interlocked.Add(ref forwardedMessages, sendTasks.Count);
+
+                Console.WriteLine($"Forwarded {forwardedCount} messages");
+            }
         }
 
         private void CreateQueueClients()
@@ -78,7 +100,6 @@ namespace Payments
             {
                 var client = QueueClient.CreateFromConnectionString(connectionString, subscriberName);
                 client.PrefetchCount = PrefetchCount;
-
                 clients.Add(client);
             }
         }

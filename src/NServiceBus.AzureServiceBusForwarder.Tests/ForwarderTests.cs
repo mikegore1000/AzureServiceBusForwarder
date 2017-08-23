@@ -71,17 +71,15 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);
             var eventMessage = new BrokeredMessage(new TestMessage());
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<string>();
             await topicClient.SendAsync(eventMessage);
 
-            A.CallTo(endpointFake).Invokes(() => tcs.SetResult(true));
+            A.CallTo(endpointFake).Invokes(() => tcs.SetResult("kfd"));
 
             if (!tcs.Task.Wait(TimeSpan.FromSeconds(10)))
             {
                 Assert.Fail("Timed out waiting for message to be forwarded");
             }
-
-            A.CallTo(endpointFake).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 

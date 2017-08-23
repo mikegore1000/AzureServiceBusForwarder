@@ -18,7 +18,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private readonly string connectionString;
         private readonly string topicName;
-        private readonly string subscriberName;
+        private readonly string destinationQueue;
         private readonly IEndpointInstance endpoint;
         private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly List<QueueClient> clients = new List<QueueClient>();
@@ -29,14 +29,15 @@ namespace NServiceBus.AzureServiceBusForwarder
             "NServiceBus.Transport.Encoding" // Don't assume endpoint forwarding into uses the same serialization
         };
 
-        public Forwarder(string connectionString, string topicName, string subscriberName, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
+        public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
         {
             Guard.IsNullOrEmpty(connectionString, nameof(connectionString));
             Guard.IsNullOrEmpty(topicName, nameof(topicName));
+            Guard.IsNullOrEmpty(destinationQueue, nameof(destinationQueue));
 
             this.connectionString = connectionString;
             this.topicName = topicName;
-            this.subscriberName = subscriberName;
+            this.destinationQueue = destinationQueue;
             this.endpoint = endpoint;
             this.messageMapper = messageMapper;
         }
@@ -75,7 +76,7 @@ namespace NServiceBus.AzureServiceBusForwarder
                     var messageType = messageMapper(message);
                     var body = GetMessageBody(messageType, message);
                     var sendOptions = new SendOptions();
-                    sendOptions.SetDestination(subscriberName);
+                    sendOptions.SetDestination(destinationQueue);
 
                     foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
                     {
@@ -95,7 +96,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         {
             for (int i = 0; i < NumberOfFactories; i++)
             {
-                var client = QueueClient.CreateFromConnectionString(connectionString, subscriberName);
+                var client = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
                 client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
             }
@@ -115,14 +116,14 @@ namespace NServiceBus.AzureServiceBusForwarder
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
 
-            if (!await namespaceManager.QueueExistsAsync(subscriberName))
+            if (!await namespaceManager.QueueExistsAsync(destinationQueue))
             {
-                await namespaceManager.CreateQueueAsync(subscriberName);
+                await namespaceManager.CreateQueueAsync(destinationQueue);
             }
 
-            if (!await namespaceManager.SubscriptionExistsAsync(topicName, subscriberName))
+            if (!await namespaceManager.SubscriptionExistsAsync(topicName, destinationQueue))
             {
-                var description = new SubscriptionDescription(topicName, subscriberName) { ForwardTo = subscriberName };
+                var description = new SubscriptionDescription(topicName, destinationQueue) { ForwardTo = destinationQueue };
                 await namespaceManager.CreateSubscriptionAsync(description);
             }
         }

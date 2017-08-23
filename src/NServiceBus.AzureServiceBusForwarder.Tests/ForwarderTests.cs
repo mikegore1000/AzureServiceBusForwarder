@@ -44,6 +44,12 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", null, message => typeof(TestMessage)));
         }
+
+        [Test]
+        public void when_creating_a_forwarder_a_message_mapper_is_required()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, null));
+        }
     }
 
     public class TestMessage : IMessage

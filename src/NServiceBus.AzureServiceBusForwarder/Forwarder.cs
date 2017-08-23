@@ -35,6 +35,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             Guard.IsNotNullOrEmpty(topicName, nameof(topicName));
             Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
             Guard.IsNotNull(endpoint, nameof(endpoint));
+            Guard.IsNotNull(messageMapper, nameof(messageMapper));
 
             this.connectionString = connectionString;
             this.topicName = topicName;

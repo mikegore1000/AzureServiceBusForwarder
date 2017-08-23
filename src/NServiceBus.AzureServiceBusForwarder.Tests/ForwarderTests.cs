@@ -1,6 +1,9 @@
 ﻿using System;
 using FakeItEasy;
+using Microsoft.ServiceBus;
 using NUnit.Framework;
+using System.Threading.Tasks;
+using Microsoft.ServiceBus.Messaging;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
@@ -49,6 +52,32 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_a_message_mapper_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, null));
+        }
+
+        // TODO: Improve test to ensure we do not need to delay
+        [Test]
+        public async Task when_a_forwarder_is_started_messages_are_forwarded_via_the_endpoint()
+        {
+            var namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
+
+            if (!await namespaceManager.TopicExistsAsync("sourceTopic"))
+            {
+                await namespaceManager.CreateTopicAsync("sourceTopic");
+            }
+
+            var forwarder = new Forwarder(namespaceConnectionString, "sourceTopic", "destinationQueue", endpointFake, message => typeof(TestMessage));
+            forwarder.Start();
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, "sourceTopic");
+            var eventMessage = new BrokeredMessage(new TestMessage());
+            await topicClient.SendAsync(eventMessage);
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            A.CallTo(endpointFake).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 

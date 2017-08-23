@@ -53,11 +53,9 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private void Poll()
         {
-            var clientTasks = new List<Task>();
-
             foreach (var c in clients)
             {
-                clientTasks.Add(PollClient(c));
+                PollClient(c);
             }
         }
 

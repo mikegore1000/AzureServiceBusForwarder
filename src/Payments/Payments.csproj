@@ -56,7 +56,6 @@
   <ItemGroup>
     <Compile Include="Events\OrderAccepted.cs" />
     <Compile Include="Events\PaymentAccepted.cs" />
-    <Compile Include="Forwarder.cs" />
     <Compile Include="Handlers\OrderAcceptedHandler.cs" />
     <Compile Include="Handlers\PaymentAcceptedHandler.cs" />
     <Compile Include="Program.cs" />
@@ -65,6 +64,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NServiceBus.AzureServiceBusForwarder\NServiceBus.AzureServiceBusForwarder.csproj">
+      <Project>{45d359f4-c16b-4a95-ad99-dbddccd5e87c}</Project>
+      <Name>NServiceBus.AzureServiceBusForwarder</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

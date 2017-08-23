@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NServiceBus;
-using NServiceBus.Config;
+using NServiceBus.AzureServiceBusForwarder;
 using NServiceBus.Logging;
 
 namespace Payments
@@ -25,10 +25,10 @@ namespace Payments
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
             
             var defaultFactory = LogManager.Use<DefaultFactory>();
-            defaultFactory.Level(LogLevel.Warn);
+            defaultFactory.Level(LogLevel.Info);
 
             var endpointConfig = new EndpointConfiguration("Payments");
-            endpointConfig.License(license);
+            //endpointConfig.License(license);
             endpointConfig.UsePersistence<InMemoryPersistence>();
             endpointConfig.SendFailedMessagesTo("error");
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();

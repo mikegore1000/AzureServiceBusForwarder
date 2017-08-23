@@ -68,9 +68,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             }
 
             var forwarder = new Forwarder(namespaceConnectionString, topicName, "destinationQueue", endpointFake, message => typeof(TestMessage));
-            forwarder.Start();
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await forwarder.Start();
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);
             var eventMessage = new BrokeredMessage(new TestMessage());

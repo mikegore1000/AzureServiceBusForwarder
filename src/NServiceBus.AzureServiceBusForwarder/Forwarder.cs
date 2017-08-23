@@ -48,10 +48,10 @@ namespace NServiceBus.AzureServiceBusForwarder
         {
             await CreateSubscriptionIfRequired();
             CreateQueueClients();
-            await Poll();
+            Poll();
         }
 
-        private async Task Poll()
+        private void Poll()
         {
             var clientTasks = new List<Task>();
 
@@ -59,8 +59,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             {
                 clientTasks.Add(PollClient(c));
             }
-
-            await Task.WhenAll(clientTasks.ToArray());
         }
 
         private static int forwardedMessages;

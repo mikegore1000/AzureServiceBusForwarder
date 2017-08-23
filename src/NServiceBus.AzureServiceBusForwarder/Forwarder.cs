@@ -61,8 +61,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             }
         }
 
-        private static int forwardedMessages;
-
         private async Task PollClient(QueueClient client) // TODO: Support cancellation
         {
             while (true)

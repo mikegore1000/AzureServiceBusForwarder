@@ -31,14 +31,8 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public Forwarder(string connectionString, string topicName, string subscriberName, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
         {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentException($"A {nameof(connectionString)} value must be supplied", nameof(connectionString));
-            }
-            if (string.IsNullOrEmpty(topicName))
-            {
-                throw new ArgumentException($"A {nameof(topicName)} value must be supplied", nameof(topicName));
-            }
+            Guard.IsNullOrEmpty(connectionString, nameof(connectionString));
+            Guard.IsNullOrEmpty(topicName, nameof(topicName));
 
             this.connectionString = connectionString;
             this.topicName = topicName;

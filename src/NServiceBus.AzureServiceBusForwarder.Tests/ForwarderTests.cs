@@ -58,20 +58,21 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [Test]
         public async Task when_a_forwarder_is_started_messages_are_forwarded_via_the_endpoint()
         {
+            const string topicName = "sourceTopic";
             var namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             var namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
-
-            if (!await namespaceManager.TopicExistsAsync("sourceTopic"))
+            
+            if (!await namespaceManager.TopicExistsAsync(topicName))
             {
-                await namespaceManager.CreateTopicAsync("sourceTopic");
+                await namespaceManager.CreateTopicAsync(topicName);
             }
 
-            var forwarder = new Forwarder(namespaceConnectionString, "sourceTopic", "destinationQueue", endpointFake, message => typeof(TestMessage));
+            var forwarder = new Forwarder(namespaceConnectionString, topicName, "destinationQueue", endpointFake, message => typeof(TestMessage));
             forwarder.Start();
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, "sourceTopic");
+            var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);
             var eventMessage = new BrokeredMessage(new TestMessage());
             await topicClient.SendAsync(eventMessage);
 

@@ -54,7 +54,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, null));
         }
 
-        // TODO: Improve test to ensure we do not need to delay
         [Test]
         public async Task when_a_forwarder_is_started_messages_are_forwarded_via_the_endpoint()
         {
@@ -72,9 +71,15 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);
             var eventMessage = new BrokeredMessage(new TestMessage());
+            var tcs = new TaskCompletionSource<bool>();
             await topicClient.SendAsync(eventMessage);
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            A.CallTo(endpointFake).Invokes(() => tcs.SetResult(true));
+
+            if (!tcs.Task.Wait(TimeSpan.FromSeconds(10)))
+            {
+                Assert.Fail("Timed out waiting for message to be forwarded");
+            }
 
             A.CallTo(endpointFake).MustHaveHappened(Repeated.Exactly.Once);
         }

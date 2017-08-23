@@ -35,6 +35,10 @@ namespace NServiceBus.AzureServiceBusForwarder
             {
                 throw new ArgumentException($"A {nameof(connectionString)} value must be supplied", nameof(connectionString));
             }
+            if (string.IsNullOrEmpty(topicName))
+            {
+                throw new ArgumentException($"A {nameof(topicName)} value must be supplied", nameof(topicName));
+            }
 
             this.connectionString = connectionString;
             this.topicName = topicName;

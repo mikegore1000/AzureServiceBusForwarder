@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
 using Serializer = NServiceBus.AzureServiceBusForwarder.Serializers;
-using Newtonsoft.Json;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests.Serializers
 {

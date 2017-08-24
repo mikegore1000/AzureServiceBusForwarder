@@ -72,23 +72,29 @@ namespace NServiceBus.AzureServiceBusForwarder
 
                 foreach (var message in messages)
                 {
-                    var messageType = messageMapper(message);
-                    var body = GetMessageBody(messageType, message);
-                    var sendOptions = new SendOptions();
-                    sendOptions.SetDestination(destinationQueue);
-
-                    foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
-                    {
-                        sendOptions.SetHeader(p.Key, p.Value.ToString());
-                    }
-
-                    sendTasks.Add(endpoint.Send(body, sendOptions));
+                    var sendTask = FowardMessage(message);
+                    sendTasks.Add(sendTask);
                     sentMessageTokens.Add(message.LockToken);
                 }
 
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
                 await client.CompleteBatchAsync(sentMessageTokens);
             }
+        }
+
+        private Task FowardMessage(BrokeredMessage message)
+        {
+            var messageType = messageMapper(message);
+            var body = GetMessageBody(messageType, message);
+            var sendOptions = new SendOptions();
+            sendOptions.SetDestination(destinationQueue);
+
+            foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+            {
+                sendOptions.SetHeader(p.Key, p.Value.ToString());
+            }
+
+            return endpoint.Send(body, sendOptions);
         }
 
         private void CreateQueueClients()

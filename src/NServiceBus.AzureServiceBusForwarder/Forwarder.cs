@@ -47,8 +47,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.messageMapper = messageMapper;
         }
 
-
-
         public async Task Start()
         {
             await CreateSubscriptionIfRequired();

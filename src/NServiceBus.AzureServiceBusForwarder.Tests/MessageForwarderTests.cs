@@ -106,11 +106,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 this.onDeserialize = onDeserialize;
             }
 
-            public bool CanDeserialize(BrokeredMessage message)
-            {
-                return serializer.CanDeserialize(message);
-            }
-
             public object Deserialize(BrokeredMessage message, Type type)
             {
                 onDeserialize();

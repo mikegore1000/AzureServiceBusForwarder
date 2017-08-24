@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
 using Serializer = NServiceBus.AzureServiceBusForwarder.Serializers;
+using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests.Serializers
 {
@@ -18,13 +19,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests.Serializers
         }
 
         [Test]
-        public void when_the_content_type_is_json_the_message_can_be_handled()
-        {
-            var message = new BrokeredMessage { ContentType = "application/json" };
-            Assert.That(serializer.CanDeserialize(message), Is.True);
-        }
-
-        [Test]
         public async Task when_a_json_message_is_provided_it_can_be_deserialized()
         {
             var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
@@ -35,8 +29,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests.Serializers
             jsonSerializer.Serialize(writer, body);
             await writer.FlushAsync();
             messageStream.Position = 0;
-            
-            var message = new BrokeredMessage(messageStream) { ContentType = "application/json" };
+            var message = await CreateMessageWithJsonBody();
 
             var result = serializer.Deserialize(message, typeof(TestMessage));
 

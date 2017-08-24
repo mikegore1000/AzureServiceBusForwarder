@@ -36,7 +36,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.connectionString = connectionString;
             this.topicName = topicName;
             this.destinationQueue = destinationQueue;
-            this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper);
+            this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper, new Serializers.JsonSerializer());
         }
 
         public async Task Start()

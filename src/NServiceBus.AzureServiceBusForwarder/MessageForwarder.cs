@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.AzureServiceBusForwarder.Serializers;
 
 namespace NServiceBus.AzureServiceBusForwarder
 {
@@ -16,12 +17,14 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly IEndpointInstance endpoint;
         private readonly string destinationQueue;
+        private readonly ISerializer serializer;
 
-        public MessageForwarder(string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
+        public MessageForwarder(string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
             Guard.IsNotNull(messageMapper, nameof(messageMapper));
             Guard.IsNotNull(endpoint, nameof(endpoint));
             Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
+            Guard.IsNotNull(serializer, nameof(serializer));
 
             this.messageMapper = messageMapper;
             this.endpoint = endpoint;

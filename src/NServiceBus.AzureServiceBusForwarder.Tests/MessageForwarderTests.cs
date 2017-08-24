@@ -4,6 +4,7 @@ using FakeItEasy;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
 using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
+using Serializer = NServiceBus.AzureServiceBusForwarder.Serializers;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
@@ -18,7 +19,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public async Task Setup()
         {
             endpointFake = A.Fake<IEndpointInstance>();
-            forwarder = new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage));
+            forwarder = new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage), new Serializer.JsonSerializer());
             jsonMessage = await CreateMessageWithJsonBody();
         }
 
@@ -27,19 +28,25 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [TestCase("")]
         public void when_creating_a_message_forwarder_the_destination_queue_is_required(string destinationQueue)
         {
-            Assert.Throws<ArgumentException>(() => new MessageForwarder(destinationQueue, endpointFake, message => typeof(TestMessage)));
+            Assert.Throws<ArgumentException>(() => new MessageForwarder(destinationQueue, endpointFake, message => typeof(TestMessage), new Serializer.JsonSerializer()));
         }
 
         [Test]
         public void when_creating_a_message_forwarder_an_endpoint_is_required()
         {
-            Assert.Throws<ArgumentNullException>(() => new MessageForwarder("DestinationQueue", null, message => typeof(TestMessage)));
+            Assert.Throws<ArgumentNullException>(() => new MessageForwarder("DestinationQueue", null, message => typeof(TestMessage), new Serializer.JsonSerializer()));
         }
 
         [Test]
         public void when_creating_a_message_forwarder_a_message_mapper_is_required()
         {
-            Assert.Throws<ArgumentNullException>(() => new MessageForwarder("DestinationQueue", endpointFake, null));
+            Assert.Throws<ArgumentNullException>(() => new MessageForwarder("DestinationQueue", endpointFake, null, new Serializer.JsonSerializer()));
+        }
+
+        [Test]
+        public void when_creating_a_message_forwarder_a_serializer_is_required()
+        {
+            Assert.Throws<ArgumentNullException>(() => new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage), null));
         }
 
         [Test]

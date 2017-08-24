@@ -29,6 +29,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.messageMapper = messageMapper;
             this.endpoint = endpoint;
             this.destinationQueue = destinationQueue;
+            this.serializer = serializer;
         }
 
         public Task FowardMessage(BrokeredMessage message)
@@ -48,7 +49,6 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
         {
-            var serializer = new Serializers.JsonSerializer();
             return serializer.Deserialize(brokeredMessage, type);
         }
     }

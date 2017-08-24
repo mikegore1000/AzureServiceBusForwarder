@@ -83,5 +83,39 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             Assert.That(sendOptions.GetHeaders().ContainsKey("TestHeader"), Is.True);
         }
+
+        [Test]
+        public async Task when_forwarding_a_message_the_serializer_is_used()
+        {
+            bool serializerCalled = false;
+            var customSerializer = new TestJsonSerializer(() => serializerCalled = true);
+            forwarder = new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage), customSerializer);
+
+            await forwarder.FowardMessage(jsonMessage);
+
+            Assert.That(serializerCalled, Is.True);
+        }
+
+        private class TestJsonSerializer : Serializer.ISerializer
+        {
+            private readonly Serializer.JsonSerializer serializer = new Serializer.JsonSerializer();
+            private readonly Action onDeserialize;
+
+            public TestJsonSerializer(Action onDeserialize)
+            {
+                this.onDeserialize = onDeserialize;
+            }
+
+            public bool CanDeserialize(BrokeredMessage message)
+            {
+                return serializer.CanDeserialize(message);
+            }
+
+            public object Deserialize(BrokeredMessage message, Type type)
+            {
+                onDeserialize();
+                return serializer.Deserialize(message, type);
+            }
+        }
     }
 }

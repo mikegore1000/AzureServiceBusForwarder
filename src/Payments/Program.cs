@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AzureServiceBusForwarder;
+using NServiceBus.AzureServiceBusForwarder.Serializers;
 using NServiceBus.Logging;
 
 namespace Payments
@@ -53,7 +54,8 @@ namespace Payments
                 ordersConnectionString,
                 "Returns",
                 "Payments",
-                endpoint, m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"));
+                endpoint, m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
+                new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer());
 
             Task forwarderTask = forwarder.Start();
         }

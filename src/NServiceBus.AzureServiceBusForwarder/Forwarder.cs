@@ -25,18 +25,19 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private ISerializer serializer;
 
-        public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
+        public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
             Guard.IsNotNullOrEmpty(connectionString, nameof(connectionString));
             Guard.IsNotNullOrEmpty(topicName, nameof(topicName));
             Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
             Guard.IsNotNull(endpoint, nameof(endpoint));
             Guard.IsNotNull(messageMapper, nameof(messageMapper));
+            Guard.IsNotNull(serializer, nameof(serializer));
 
             this.connectionString = connectionString;
             this.topicName = topicName;
             this.destinationQueue = destinationQueue;
-            this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper, new Serializers.JsonSerializer());
+            this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper, serializer);
         }
 
         public async Task Start()
@@ -81,12 +82,6 @@ namespace NServiceBus.AzureServiceBusForwarder
                 client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
             }
-        }
-
-        public void SetSerializer(ISerializer toUse)
-        {
-            Guard.IsNotNull(toUse, nameof(toUse));
-            serializer = toUse;
         }
 
         private async Task CreateSubscriptionIfRequired()

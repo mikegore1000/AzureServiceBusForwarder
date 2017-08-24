@@ -30,7 +30,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 await namespaceManager.CreateTopicAsync(topicName);
             }
 
-            var forwarder = new Forwarder(namespaceConnectionString, topicName, "destinationQueue", endpointFake, message => typeof(TestMessage));
+            var forwarder = new Forwarder(namespaceConnectionString, topicName, "destinationQueue", endpointFake, message => typeof(TestMessage), new AzureServiceBusForwarder.Serializers.JsonSerializer());
             await forwarder.Start();
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);

@@ -42,7 +42,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests.Serializers
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.TypeOf<TestMessage>());
-
         }
     }
 }

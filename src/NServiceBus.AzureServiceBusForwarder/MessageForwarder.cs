@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.ServiceBus.Messaging;
 
 namespace NServiceBus.AzureServiceBusForwarder
@@ -48,12 +45,8 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
         {
-            var stream = brokeredMessage.GetBody<Stream>();
-            var dataContractSerializer = new DataContractSerializer(type);
-            using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
-            {
-                return dataContractSerializer.ReadObject(reader);
-            }
+            var serializer = new Serializers.JsonSerializer();
+            return serializer.Deserialize(brokeredMessage, type);
         }
     }
 }

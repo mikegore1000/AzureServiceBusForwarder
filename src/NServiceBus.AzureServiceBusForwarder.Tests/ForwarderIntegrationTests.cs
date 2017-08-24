@@ -4,6 +4,7 @@ using FakeItEasy;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
+using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
@@ -33,7 +34,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             await forwarder.Start();
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, topicName);
-            var eventMessage = new BrokeredMessage(new TestMessage());
+            var eventMessage = await CreateMessageWithJsonBody();
             var tcs = new TaskCompletionSource<string>();
             await topicClient.SendAsync(eventMessage);
 

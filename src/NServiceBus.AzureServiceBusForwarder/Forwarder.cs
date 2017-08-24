@@ -116,7 +116,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         public void SetSerializer(ISerializer toUse)
         {
             Guard.IsNotNull(toUse, nameof(toUse));
-            this.serializer = toUse;
+            serializer = toUse;
         }
 
         private async Task CreateSubscriptionIfRequired()

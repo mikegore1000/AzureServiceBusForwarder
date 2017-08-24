@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
 using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
 

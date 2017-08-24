@@ -29,12 +29,13 @@ namespace Payments
             defaultFactory.Level(LogLevel.Info);
 
             var endpointConfig = new EndpointConfiguration("Payments");
-            //endpointConfig.License(license);
+            endpointConfig.License(license);
             endpointConfig.UsePersistence<InMemoryPersistence>();
             endpointConfig.SendFailedMessagesTo("error");
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();
             transport.ConnectionString(paymentsConnectionString);
-            transport.UseForwardingTopology();
+            var topology = transport.UseForwardingTopology();
+            topology.NumberOfEntitiesInBundle(1);
             var factories = transport.MessagingFactories();
             var receivers = transport.MessageReceivers();
 

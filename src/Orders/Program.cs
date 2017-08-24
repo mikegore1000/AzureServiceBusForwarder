@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
@@ -64,18 +65,28 @@ namespace Orders
 
             for (int i = 0; i < messageCount; i++)
             {
-                var message = new BrokeredMessage(new OrderAccepted {OrderReference = Guid.NewGuid()});
-                message.Properties["Asos.EnclosedType"] = "Orders.Events.OrderAccepted";
-                // Can get rid of these properties as we can bridge on Asos.EnclosedType, but it still works with these headers in place for NSB <-> NSB integration
-                message.Properties["NServiceBus.EnclosedMessageTypes"] = "Orders.Events.OrderAccepted";
-                message.Properties["NServiceBus.Transport.Encoding"] = "application/octect-stream";
-
-                messages.Add(message);
+                messages.Add(await CreateMessage());
             }
 
             await topicClient.SendBatchAsync(messages);
 
             Console.WriteLine($"Sent block of {messageCount} messages");
+        }
+
+        private static async Task<BrokeredMessage> CreateMessage()
+        {
+            var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+            var messageStream = new MemoryStream();
+            var writer = new StreamWriter(messageStream);
+            var body = new OrderAccepted { OrderReference = Guid.NewGuid() };
+
+            jsonSerializer.Serialize(writer, body);
+            await writer.FlushAsync();
+            messageStream.Position = 0;
+
+            var message =  new BrokeredMessage(messageStream) { ContentType = "application/json" };
+            message.Properties["Asos.EnclosedType"] = "Orders.Events.OrderAccepted";
+            return message;
         }
 
         private static async Task CreateTopic()

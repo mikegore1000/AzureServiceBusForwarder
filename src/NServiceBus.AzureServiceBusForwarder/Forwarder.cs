@@ -23,14 +23,9 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly IEndpointInstance endpoint;
         private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly List<QueueClient> clients = new List<QueueClient>();
+        private readonly MessageForwarder messageForwarder;
 
         private ISerializer serializer;
-        
-
-        private static readonly List<string> IgnoredHeaders = new List<string>
-        {
-            "NServiceBus.Transport.Encoding" // Don't assume endpoint forwarding into uses the same serialization
-        };
 
         public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
         {
@@ -45,6 +40,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.destinationQueue = destinationQueue;
             this.endpoint = endpoint;
             this.messageMapper = messageMapper;
+            this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper);
         }
 
         public async Task Start()
@@ -72,29 +68,13 @@ namespace NServiceBus.AzureServiceBusForwarder
 
                 foreach (var message in messages)
                 {
-                    var sendTask = FowardMessage(message);
-                    sendTasks.Add(sendTask);
+                    sendTasks.Add(messageForwarder.FowardMessage(message));
                     sentMessageTokens.Add(message.LockToken);
                 }
 
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
                 await client.CompleteBatchAsync(sentMessageTokens);
             }
-        }
-
-        private Task FowardMessage(BrokeredMessage message)
-        {
-            var messageType = messageMapper(message);
-            var body = GetMessageBody(messageType, message);
-            var sendOptions = new SendOptions();
-            sendOptions.SetDestination(destinationQueue);
-
-            foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
-            {
-                sendOptions.SetHeader(p.Key, p.Value.ToString());
-            }
-
-            return endpoint.Send(body, sendOptions);
         }
 
         private void CreateQueueClients()
@@ -104,16 +84,6 @@ namespace NServiceBus.AzureServiceBusForwarder
                 var client = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
                 client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
-            }
-        }
-
-        public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
-        {
-            var stream = brokeredMessage.GetBody<Stream>();
-            var dataContractSerializer = new DataContractSerializer(type);
-            using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
-            {
-                return dataContractSerializer.ReadObject(reader);
             }
         }
 

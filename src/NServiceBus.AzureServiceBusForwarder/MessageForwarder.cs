@@ -1,0 +1,55 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using System.Xml;
+using Microsoft.ServiceBus.Messaging;
+
+namespace NServiceBus.AzureServiceBusForwarder
+{
+    public class MessageForwarder
+    {
+        private static readonly List<string> IgnoredHeaders = new List<string>
+        {
+            "NServiceBus.Transport.Encoding" // Don't assume endpoint forwarding into uses the same serialization
+        };
+
+        private readonly Func<BrokeredMessage, Type> messageMapper;
+        private readonly IEndpointInstance endpoint;
+        private readonly string destinationQueue;
+
+        public MessageForwarder(string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
+        {
+            this.messageMapper = messageMapper;
+            this.endpoint = endpoint;
+            this.destinationQueue = destinationQueue;
+        }
+
+        public Task FowardMessage(BrokeredMessage message)
+        {
+            var messageType = messageMapper(message);
+            var body = GetMessageBody(messageType, message);
+            var sendOptions = new SendOptions();
+            sendOptions.SetDestination(destinationQueue);
+
+            foreach (var p in message.Properties.Where(x => !IgnoredHeaders.Contains(x.Key)))
+            {
+                sendOptions.SetHeader(p.Key, p.Value.ToString());
+            }
+
+            return endpoint.Send(body, sendOptions);
+        }
+
+        public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
+        {
+            var stream = brokeredMessage.GetBody<Stream>();
+            var dataContractSerializer = new DataContractSerializer(type);
+            using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
+            {
+                return dataContractSerializer.ReadObject(reader);
+            }
+        }
+    }
+}

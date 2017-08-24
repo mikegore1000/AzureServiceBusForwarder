@@ -21,7 +21,6 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly string topicName;
         private readonly string destinationQueue;
         private readonly IEndpointInstance endpoint;
-        private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly List<QueueClient> clients = new List<QueueClient>();
         private readonly MessageForwarder messageForwarder;
 
@@ -39,7 +38,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.topicName = topicName;
             this.destinationQueue = destinationQueue;
             this.endpoint = endpoint;
-            this.messageMapper = messageMapper;
             this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper);
         }
 

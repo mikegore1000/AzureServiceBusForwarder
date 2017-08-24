@@ -22,6 +22,10 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public MessageForwarder(string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper)
         {
+            Guard.IsNotNull(messageMapper, nameof(messageMapper));
+            Guard.IsNotNull(endpoint, nameof(endpoint));
+            Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
+
             this.messageMapper = messageMapper;
             this.endpoint = endpoint;
             this.destinationQueue = destinationQueue;

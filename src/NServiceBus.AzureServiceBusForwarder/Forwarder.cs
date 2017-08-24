@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.AzureServiceBusForwarder.Serializers;
 
 namespace NServiceBus.AzureServiceBusForwarder
 {
@@ -22,6 +23,8 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly IEndpointInstance endpoint;
         private readonly Func<BrokeredMessage, Type> messageMapper;
         private readonly List<QueueClient> clients = new List<QueueClient>();
+
+        private ISerializer serializer;
         
 
         private static readonly List<string> IgnoredHeaders = new List<string>
@@ -43,6 +46,8 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.endpoint = endpoint;
             this.messageMapper = messageMapper;
         }
+
+
 
         public async Task Start()
         {
@@ -101,11 +106,17 @@ namespace NServiceBus.AzureServiceBusForwarder
         public object GetMessageBody(Type type, BrokeredMessage brokeredMessage)
         {
             var stream = brokeredMessage.GetBody<Stream>();
-            var serializer = new DataContractSerializer(type);
+            var dataContractSerializer = new DataContractSerializer(type);
             using (var reader = XmlDictionaryReader.CreateBinaryReader(stream, XmlDictionaryReaderQuotas.Max))
             {
-                return serializer.ReadObject(reader);
+                return dataContractSerializer.ReadObject(reader);
             }
+        }
+
+        public void SetSerializer(ISerializer toUse)
+        {
+            Guard.IsNotNull(toUse, nameof(toUse));
+            this.serializer = toUse;
         }
 
         private async Task CreateSubscriptionIfRequired()

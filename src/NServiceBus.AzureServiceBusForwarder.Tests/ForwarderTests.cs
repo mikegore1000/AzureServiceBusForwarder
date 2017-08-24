@@ -81,5 +81,12 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 Assert.Fail("Timed out waiting for message to be forwarded");
             }
         }
+
+        [Test]
+        public void when_providing_a_serializer_it_is_required()
+        {
+            var forwarder = new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, message => typeof(TestMessage));
+            Assert.Throws<ArgumentNullException>(() => forwarder.SetSerializer(null));
+        }
     }
 }

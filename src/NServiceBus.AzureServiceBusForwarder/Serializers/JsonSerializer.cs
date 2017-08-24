@@ -4,7 +4,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace NServiceBus.AzureServiceBusForwarder.Serializers
 {
-    public class JsonSerializer
+    public class JsonSerializer : ISerializer
     {
         private readonly Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
 

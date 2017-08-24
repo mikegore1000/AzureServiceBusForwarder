@@ -50,5 +50,20 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             Assert.That(forwardedMessage, Is.Not.Null);
         }
+
+        [Test]
+        public async Task when_forwarding_a_message_with_an_ignored_header_it_is_not_copied_to_the_message()
+        {
+            var forwarder = new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage));
+            var jsonMessage = await CreateMessageWithJsonBody();
+            jsonMessage.Properties.Add("NServiceBus.Transport.Encoding", "Test");
+            SendOptions sendOptions = null;
+
+            A.CallTo(endpointFake).Invokes((object m, SendOptions o) => sendOptions = o);
+
+            await forwarder.FowardMessage(jsonMessage);
+
+            Assert.That(sendOptions.GetHeaders().ContainsKey("NServiceBus.Transport.Encoding"), Is.False);
+        }
     }
 }

@@ -20,7 +20,6 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly string connectionString;
         private readonly string topicName;
         private readonly string destinationQueue;
-        private readonly IEndpointInstance endpoint;
         private readonly List<QueueClient> clients = new List<QueueClient>();
         private readonly MessageForwarder messageForwarder;
 
@@ -37,7 +36,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.connectionString = connectionString;
             this.topicName = topicName;
             this.destinationQueue = destinationQueue;
-            this.endpoint = endpoint;
             this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper);
         }
 

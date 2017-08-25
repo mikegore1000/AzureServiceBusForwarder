@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Xml;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using NServiceBus.AzureServiceBusForwarder.Serializers;

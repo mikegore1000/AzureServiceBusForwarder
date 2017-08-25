@@ -19,8 +19,6 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly List<QueueClient> clients = new List<QueueClient>();
         private readonly MessageForwarder messageForwarder;
 
-        private ISerializer serializer;
-
         public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
             Guard.IsNotNullOrEmpty(connectionString, nameof(connectionString));

@@ -36,11 +36,26 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper, serializer);
         }
 
-        public async Task Start()
+        public void Start()
         {
-            await CreateSubscriptionIfRequired();
             CreateQueueClients();
             Poll();
+        }
+
+        public async Task CreateSubscriptionEntitiesIfRequired()
+        {
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+
+            if (!await namespaceManager.QueueExistsAsync(destinationQueue))
+            {
+                await namespaceManager.CreateQueueAsync(destinationQueue);
+            }
+
+            if (!await namespaceManager.SubscriptionExistsAsync(topicName, destinationQueue))
+            {
+                var description = new SubscriptionDescription(topicName, destinationQueue) { ForwardTo = destinationQueue };
+                await namespaceManager.CreateSubscriptionAsync(description);
+            }
         }
 
         private void Poll()
@@ -77,22 +92,6 @@ namespace NServiceBus.AzureServiceBusForwarder
                 var client = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
                 client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
-            }
-        }
-
-        private async Task CreateSubscriptionIfRequired()
-        {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
-
-            if (!await namespaceManager.QueueExistsAsync(destinationQueue))
-            {
-                await namespaceManager.CreateQueueAsync(destinationQueue);
-            }
-
-            if (!await namespaceManager.SubscriptionExistsAsync(topicName, destinationQueue))
-            {
-                var description = new SubscriptionDescription(topicName, destinationQueue) { ForwardTo = destinationQueue };
-                await namespaceManager.CreateSubscriptionAsync(description);
             }
         }
     }

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using NServiceBus;
 using NServiceBus.AzureServiceBusForwarder;
-using NServiceBus.AzureServiceBusForwarder.Serializers;
 using NServiceBus.Logging;
 
 namespace Payments
@@ -57,7 +56,8 @@ namespace Payments
                 endpoint, m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
                 new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer());
 
-            Task forwarderTask = forwarder.Start();
+            await forwarder.CreateSubscriptionEntitiesIfRequired();
+            forwarder.Start();
         }
     }
 }

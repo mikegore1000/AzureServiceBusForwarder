@@ -9,7 +9,6 @@ namespace NServiceBus.AzureServiceBusForwarder
 {
     public class Forwarder
     {
-        private const int PrefetchCount = 100; // TODO: Make this configurable
         private const int NumberOfFactories = 10; // TODO: Make this configurable
         private const int ReceiveBatchSize = 500;  // TODO: Make this configurable
 
@@ -84,7 +83,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             for (int i = 0; i < NumberOfFactories; i++)
             {
                 var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationConfiguration.DestinationQueue);
-                client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
             }
         }

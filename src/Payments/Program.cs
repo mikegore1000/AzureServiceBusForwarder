@@ -28,7 +28,10 @@ namespace Payments
             defaultFactory.Level(LogLevel.Info);
 
             var endpointConfig = new EndpointConfiguration("Payments");
-            endpointConfig.License(license);
+            if (!string.IsNullOrEmpty(license))
+            {
+                endpointConfig.License(license);
+            }
             endpointConfig.UsePersistence<InMemoryPersistence>();
             endpointConfig.SendFailedMessagesTo("error");
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();

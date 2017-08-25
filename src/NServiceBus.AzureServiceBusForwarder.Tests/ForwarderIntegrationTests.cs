@@ -25,10 +25,12 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             var namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             var namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
 
-            if (!await namespaceManager.TopicExistsAsync(topicName))
+            if (await namespaceManager.TopicExistsAsync(topicName))
             {
-                await namespaceManager.CreateTopicAsync(topicName);
+                await namespaceManager.DeleteTopicAsync(topicName);
             }
+
+            await namespaceManager.CreateTopicAsync(topicName);
 
             var forwarder = new Forwarder(namespaceConnectionString, topicName, "destinationQueue", endpointFake, message => typeof(TestMessage), new AzureServiceBusForwarder.Serializers.JsonSerializer());
             await forwarder.Start();

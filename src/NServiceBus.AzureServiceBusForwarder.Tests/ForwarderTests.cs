@@ -21,31 +21,16 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 null,
-                "DestinationQueue",
-                endpointFake,
+                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 message => typeof(TestMessage),
                 null));
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase("")]
-        public void when_creating_a_forwarder_the_destination_queue_is_required(string destinationQueue)
-        {
-            Assert.Throws<ArgumentException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
-                destinationQueue,
-                endpointFake,
-                message => typeof(TestMessage),
-                new Serializer.JsonSerializer()));
-        }
-
-        [Test]
-        public void when_creating_a_forwarder_an_endpoint_is_required()
+        public void when_creating_a_forwarder_the_destination_configuration_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
-                "DestinationQueue",
                 null,
                 message => typeof(TestMessage),
                 new Serializer.JsonSerializer()));
@@ -56,8 +41,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
-                "DestinationQueue",
-                endpointFake,
+                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 null,
                 new Serializer.JsonSerializer()));
         }
@@ -67,8 +51,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
-                "DestinationQueue", 
-                endpointFake, 
+                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake), 
                 message => typeof(TestMessage),
                 null));
         }

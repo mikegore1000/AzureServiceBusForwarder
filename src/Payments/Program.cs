@@ -52,8 +52,8 @@ namespace Payments
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(ordersConnectionString, "Returns"),
-                "Payments",
-                endpoint, m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
+                new ForwarderDestinationConfiguration("Payments", endpoint),
+                m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
                 new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer());
 
             await forwarder.CreateSubscriptionEntitiesIfRequired();

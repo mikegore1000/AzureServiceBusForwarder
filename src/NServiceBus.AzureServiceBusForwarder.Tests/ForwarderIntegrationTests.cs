@@ -34,8 +34,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName),
-                DestinationQueue,
-                endpointFake,
+                new ForwarderDestinationConfiguration(DestinationQueue, endpointFake),
                 message => typeof(TestMessage),
                 new AzureServiceBusForwarder.Serializers.JsonSerializer());
         }

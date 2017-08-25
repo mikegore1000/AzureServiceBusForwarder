@@ -13,23 +13,19 @@ namespace NServiceBus.AzureServiceBusForwarder
         private const int NumberOfFactories = 10; // TODO: Make this configurable
         private const int ReceiveBatchSize = 500;  // TODO: Make this configurable
 
-        private readonly string connectionString;
-        private readonly string topicName;
+        private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly string destinationQueue;
         private readonly List<QueueClient> clients = new List<QueueClient>();
         private readonly MessageForwarder messageForwarder;
 
-        public Forwarder(string connectionString, string topicName, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
+        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, string destinationQueue, IEndpointInstance endpoint, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
-            Guard.IsNotNullOrEmpty(connectionString, nameof(connectionString));
-            Guard.IsNotNullOrEmpty(topicName, nameof(topicName));
             Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
             Guard.IsNotNull(endpoint, nameof(endpoint));
             Guard.IsNotNull(messageMapper, nameof(messageMapper));
             Guard.IsNotNull(serializer, nameof(serializer));
 
-            this.connectionString = connectionString;
-            this.topicName = topicName;
+            this.sourceConfiguration = sourceConfiguration;
             this.destinationQueue = destinationQueue;
             this.messageForwarder = new MessageForwarder(destinationQueue, endpoint, messageMapper, serializer);
         }
@@ -42,16 +38,16 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public async Task CreateSubscriptionEntitiesIfRequired()
         {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(sourceConfiguration.ConnectionString);
 
             if (!await namespaceManager.QueueExistsAsync(destinationQueue))
             {
                 await namespaceManager.CreateQueueAsync(destinationQueue);
             }
 
-            if (!await namespaceManager.SubscriptionExistsAsync(topicName, destinationQueue))
+            if (!await namespaceManager.SubscriptionExistsAsync(sourceConfiguration.TopicName, destinationQueue))
             {
-                var description = new SubscriptionDescription(topicName, destinationQueue) { ForwardTo = destinationQueue };
+                var description = new SubscriptionDescription(sourceConfiguration.TopicName, destinationQueue) { ForwardTo = destinationQueue };
                 await namespaceManager.CreateSubscriptionAsync(description);
             }
         }
@@ -87,7 +83,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         {
             for (int i = 0; i < NumberOfFactories; i++)
             {
-                var client = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
+                var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationQueue);
                 client.PrefetchCount = PrefetchCount;
                 clients.Add(client);
             }

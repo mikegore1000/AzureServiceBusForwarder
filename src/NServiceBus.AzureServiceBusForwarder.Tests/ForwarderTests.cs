@@ -17,19 +17,14 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase("")]
-        public void when_creating_a_forwarder_the_connection_string_is_required(string connectionString)
+        public void when_creating_a_forwarder_the_source_configuration_is_required()
         {
-            Assert.Throws<ArgumentException>(() => new Forwarder(connectionString, "TestTopic", "DestinationQueue", endpointFake, message => typeof(TestMessage), new Serializer.JsonSerializer()));
-        }
-
-        [Test]
-        [TestCase(null)]
-        [TestCase("")]
-        public void when_creating_a_forwarder_the_topic_name_is_required(string topicName)
-        {
-            Assert.Throws<ArgumentException>(() => new Forwarder("ConnectionString", topicName, "DestinationQueue", endpointFake, message => typeof(TestMessage), new Serializer.JsonSerializer()));
+            Assert.Throws<ArgumentNullException>(() => new Forwarder(
+                null,
+                "DestinationQueue",
+                endpointFake,
+                message => typeof(TestMessage),
+                null));
         }
 
         [Test]
@@ -37,25 +32,45 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [TestCase("")]
         public void when_creating_a_forwarder_the_destination_queue_is_required(string destinationQueue)
         {
-            Assert.Throws<ArgumentException>(() => new Forwarder("ConnectionString", "TestTopic", destinationQueue, endpointFake, message => typeof(TestMessage), new Serializer.JsonSerializer()));
+            Assert.Throws<ArgumentException>(() => new Forwarder(
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
+                destinationQueue,
+                endpointFake,
+                message => typeof(TestMessage),
+                new Serializer.JsonSerializer()));
         }
 
         [Test]
         public void when_creating_a_forwarder_an_endpoint_is_required()
         {
-            Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", null, message => typeof(TestMessage), new Serializer.JsonSerializer()));
+            Assert.Throws<ArgumentNullException>(() => new Forwarder(
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
+                "DestinationQueue",
+                null,
+                message => typeof(TestMessage),
+                new Serializer.JsonSerializer()));
         }
 
         [Test]
         public void when_creating_a_forwarder_a_message_mapper_is_required()
         {
-            Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, null, new Serializer.JsonSerializer()));
+            Assert.Throws<ArgumentNullException>(() => new Forwarder(
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
+                "DestinationQueue",
+                endpointFake,
+                null,
+                new Serializer.JsonSerializer()));
         }
 
         [Test]
         public void when_creating_a_forwarder_a_serializer_is_required()
         {
-            Assert.Throws<ArgumentNullException>(() => new Forwarder("ConnectionString", "TestTopic", "DestinationQueue", endpointFake, message => typeof(TestMessage), null));
+            Assert.Throws<ArgumentNullException>(() => new Forwarder(
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic"),
+                "DestinationQueue", 
+                endpointFake, 
+                message => typeof(TestMessage),
+                null));
         }
     }
 }

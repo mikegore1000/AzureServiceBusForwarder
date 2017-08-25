@@ -55,7 +55,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             TestMessage forwardedMessage = null;
             A.CallTo(endpointFake).Invokes((object m, SendOptions o) => forwardedMessage = (TestMessage)m);
 
-            await forwarder.FowardMessage(jsonMessage);
+            await forwarder.ForwardMessage(jsonMessage);
 
             Assert.That(forwardedMessage, Is.Not.Null);
         }
@@ -67,7 +67,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             SendOptions sendOptions = null;
             A.CallTo(endpointFake).Invokes((object m, SendOptions o) => sendOptions = o);
 
-            await forwarder.FowardMessage(jsonMessage);
+            await forwarder.ForwardMessage(jsonMessage);
 
             Assert.That(sendOptions.GetHeaders().ContainsKey("NServiceBus.Transport.Encoding"), Is.False);
         }
@@ -79,7 +79,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             SendOptions sendOptions = null;
             A.CallTo(endpointFake).Invokes((object m, SendOptions o) => sendOptions = o);
 
-            await forwarder.FowardMessage(jsonMessage);
+            await forwarder.ForwardMessage(jsonMessage);
 
             Assert.That(sendOptions.GetHeaders().ContainsKey("TestHeader"), Is.True);
         }
@@ -91,7 +91,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             var customSerializer = new TestJsonSerializer(() => serializerCalled = true);
             forwarder = new MessageForwarder("DestinationQueue", endpointFake, message => typeof(TestMessage), customSerializer);
 
-            await forwarder.FowardMessage(jsonMessage);
+            await forwarder.ForwardMessage(jsonMessage);
 
             Assert.That(serializerCalled, Is.True);
         }

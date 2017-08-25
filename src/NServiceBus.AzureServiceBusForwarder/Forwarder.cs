@@ -20,6 +20,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
+            Guard.IsNotNull(sourceConfiguration, nameof(sourceConfiguration));
             Guard.IsNotNull(destinationConfiguration, nameof(destinationConfiguration));
             Guard.IsNotNull(messageMapper, nameof(messageMapper));
             Guard.IsNotNull(serializer, nameof(serializer));

@@ -23,7 +23,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 null,
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 message => typeof(TestMessage),
-                null));
+                new Serializer.JsonSerializer()));
         }
 
         [Test]

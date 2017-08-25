@@ -76,7 +76,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 
                 foreach (var message in messages)
                 {
-                    sendTasks.Add(messageForwarder.FowardMessage(message));
+                    sendTasks.Add(messageForwarder.ForwardMessage(message));
                     sentMessageTokens.Add(message.LockToken);
                 }
 

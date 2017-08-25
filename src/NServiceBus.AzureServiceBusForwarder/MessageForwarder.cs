@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.serializer = serializer;
         }
 
-        public Task FowardMessage(BrokeredMessage message)
+        public Task ForwardMessage(BrokeredMessage message)
         {
             var messageType = messageMapper(message);
             var body = GetMessageBody(messageType, message);

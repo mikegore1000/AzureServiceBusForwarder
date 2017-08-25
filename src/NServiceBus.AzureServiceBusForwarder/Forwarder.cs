@@ -10,7 +10,6 @@ namespace NServiceBus.AzureServiceBusForwarder
     public class Forwarder
     {
         private const int NumberOfFactories = 10; // TODO: Make this configurable
-        private const int ReceiveBatchSize = 500;  // TODO: Make this configurable
 
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
@@ -63,7 +62,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         {
             while (true)
             {
-                var messages = await client.ReceiveBatchAsync(ReceiveBatchSize); // TODO: Make configurable
+                var messages = await client.ReceiveBatchAsync(sourceConfiguration.ReceiveBatchSize);
                 var sentMessageTokens = new List<Guid>();
                 var sendTasks = new List<Task>();
 

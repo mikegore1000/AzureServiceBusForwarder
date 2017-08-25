@@ -19,5 +19,13 @@ namespace NServiceBus.AzureServiceBusForwarder
                 throw new ArgumentNullException($"A {name} value must be supplied", name);
             }
         }
+
+        public static void IsGreaterThan(int expected, int value, string name)
+        {
+            if (expected >= value)
+            {
+                throw new ArgumentOutOfRangeException($"{name} must be greater than {expected}");
+            }
+        }
     }
 }

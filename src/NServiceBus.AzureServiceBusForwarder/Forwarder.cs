@@ -42,7 +42,8 @@ namespace NServiceBus.AzureServiceBusForwarder
 
             if (!await namespaceManager.QueueExistsAsync(destinationConfiguration.DestinationQueue))
             {
-                await namespaceManager.CreateQueueAsync(destinationConfiguration.DestinationQueue);
+                var description = new QueueDescription(destinationConfiguration.DestinationQueue) {SupportOrdering = false};
+                await namespaceManager.CreateQueueAsync(description);
             }
 
             if (!await namespaceManager.SubscriptionExistsAsync(sourceConfiguration.TopicName, destinationConfiguration.DestinationQueue))

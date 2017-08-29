@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.ServiceBus.Messaging;
 using NServiceBus;
 using NServiceBus.AzureServiceBusForwarder;
 using NServiceBus.Logging;
+using NServiceBus.Transport.AzureServiceBus;
 
 namespace Payments
 {
@@ -37,20 +39,23 @@ namespace Payments
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();
             transport.ConnectionString(paymentsConnectionString);
             var topology = transport.UseForwardingTopology();
-            topology.NumberOfEntitiesInBundle(1);
             var factories = transport.MessagingFactories();
             var receivers = transport.MessageReceivers();
 
             var perReceiverConcurrency = 10;
             var numberOfReceivers = 2; // Premium messaging has 2 partitions
             var globalConcurrency = numberOfReceivers * perReceiverConcurrency;
-
+            
             endpointConfig.LimitMessageProcessingConcurrencyTo(globalConcurrency);
-            receivers.PrefetchCount(500);
             factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3); //Bus receiver, forwarder sender, bus sender
             transport.NumberOfClientsPerEntity(numberOfReceivers);
             factories.BatchFlushInterval(TimeSpan.FromMilliseconds(100));
-            transport.Transactions(TransportTransactionMode.ReceiveOnly); // Use peek lock
+
+            receivers.PrefetchCount(500); // The more we prefetch, the better the throughput will be, needs to be balanced though as you can only pull so many messages per batch
+            topology.NumberOfEntitiesInBundle(1); // Only use 1 bundle topic, there is no benefit to using more and Particular are going to remove this support moving forward
+            transport.Transactions(TransportTransactionMode.ReceiveOnly); // Use peek lock, vastly quicker than 
+            transport.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream); // Need to use this for non-NSB integrations - will be what Particular use moving forward too
+            transport.TransportType(TransportType.Amqp); // Use this rather than netmessaging, allows more connections to the namespace and is an open standard
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(

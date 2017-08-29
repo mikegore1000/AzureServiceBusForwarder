@@ -13,8 +13,9 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
-        private readonly List<QueueClient> clients = new List<QueueClient>();
+        private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
         private readonly MessageForwarder messageForwarder;
+        private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
         public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer)
         {
@@ -26,6 +27,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.sourceConfiguration = sourceConfiguration;
             this.destinationConfiguration = destinationConfiguration;
             this.messageForwarder = new MessageForwarder(destinationConfiguration.DestinationQueue, destinationConfiguration.Endpoint, messageMapper, serializer);
+            this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 
         public void Start()
@@ -52,17 +54,17 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private void Poll()
         {
-            foreach (var c in clients)
+            foreach (var messageReceiver in messageReceivers)
             {
-                PollClient(c);
+                PollMessageReceiever(messageReceiver);
             }
         }
 
-        private async Task PollClient(QueueClient client) // TODO: Support cancellation
+        private async Task PollMessageReceiever(BatchMessageReceiver receiver) // TODO: Support cancellation
         {
             while (true)
             {
-                var messages = await client.ReceiveBatchAsync(sourceConfiguration.ReceiveBatchSize);
+                var messages = await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize);
                 var sentMessageTokens = new List<Guid>();
                 var sendTasks = new List<Task>();
 
@@ -74,7 +76,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
                 // BUG: Don't call this unless there are messages, need to abstract the client polling so we can use fakes for Service Bus interactions
-                await client.CompleteBatchAsync(sentMessageTokens);
+                await receiver.CompleteMessages(sentMessageTokens);
             }
         }
 
@@ -83,7 +85,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             for (int i = 0; i < NumberOfFactories; i++)
             {
                 var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationConfiguration.DestinationQueue);
-                clients.Add(client);
+                messageReceivers.Add(batchMessageReceiverFactory.Create(client));
             }
         }
     }

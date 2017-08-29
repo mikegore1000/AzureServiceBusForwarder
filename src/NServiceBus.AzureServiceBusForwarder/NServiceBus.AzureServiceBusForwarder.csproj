@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BatchMessageReceiver.cs" />
+    <Compile Include="BatchMessageReceiverFactory.cs" />
     <Compile Include="Forwarder.cs" />
     <Compile Include="ForwarderDestinationConfiguration.cs" />
     <Compile Include="ForwarderSourceConfiguration.cs" />

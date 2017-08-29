@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 
@@ -20,9 +21,14 @@ namespace NServiceBus.AzureServiceBusForwarder
             return client.ReceiveBatchAsync(batchSize);
         }
 
-        public Task CompleteMessages(IEnumerable<Guid> lockTokens)
+        public Task CompleteMessages(Guid[] lockTokens)
         {
-            return client.CompleteBatchAsync(lockTokens);
+            if (lockTokens.Any())
+            {
+                return client.CompleteBatchAsync(lockTokens);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

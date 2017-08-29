@@ -75,8 +75,7 @@ namespace NServiceBus.AzureServiceBusForwarder
                 }
 
                 await Task.WhenAll(sendTasks).ConfigureAwait(false);
-                // BUG: Don't call this unless there are messages, need to abstract the client polling so we can use fakes for Service Bus interactions
-                await receiver.CompleteMessages(sentMessageTokens);
+                await receiver.CompleteMessages(sentMessageTokens.ToArray());
             }
         }
 

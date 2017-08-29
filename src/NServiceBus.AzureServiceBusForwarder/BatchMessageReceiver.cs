@@ -11,6 +11,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         public BatchMessageReceiver(QueueClient client)
         {
+            Guard.IsNotNull(client, nameof(client));
             this.client = client;
         }
 

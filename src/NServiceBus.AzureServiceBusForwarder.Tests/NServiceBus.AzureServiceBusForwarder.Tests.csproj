@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BatchMessageReceiverIntegrationTests.cs" />
     <Compile Include="ForwarderDestinationConfigurationTests.cs" />
     <Compile Include="ForwarderIntegrationTests.cs" />
     <Compile Include="ForwarderSourceConfigurationTests.cs" />

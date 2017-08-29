@@ -9,6 +9,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
     public class ForwarderTests
     {
         private const int ReceiveBatchSize = 1;
+        private const int PrefetchCount = 1;
         private IEndpointInstance endpointFake;
 
         [SetUp]
@@ -31,7 +32,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_the_destination_configuration_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize),
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 null,
                 message => typeof(TestMessage),
                 new Serializer.JsonSerializer()));
@@ -41,7 +42,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_a_message_mapper_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize),
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 null,
                 new Serializer.JsonSerializer()));
@@ -51,7 +52,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_a_serializer_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize),
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake), 
                 message => typeof(TestMessage),
                 null));

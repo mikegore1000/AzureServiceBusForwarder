@@ -33,7 +33,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             await namespaceManager.CreateTopicAsync(TopicName);
 
             forwarder = new Forwarder(
-                new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500),
+                new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
                 new ForwarderDestinationConfiguration(DestinationQueue, endpointFake),
                 message => typeof(TestMessage),
                 new AzureServiceBusForwarder.Serializers.JsonSerializer());

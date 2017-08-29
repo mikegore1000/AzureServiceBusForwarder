@@ -59,7 +59,7 @@ namespace Payments
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
             var forwarder = new Forwarder(
-                new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 4000),
+                new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 1000),
                 new ForwarderDestinationConfiguration("Payments", endpoint),
                 m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
                 new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer());

@@ -94,7 +94,7 @@ namespace Orders
             var namespaceManager = NamespaceManager.CreateFromConnectionString(connectionString);
             if (!await namespaceManager.TopicExistsAsync(TopicName))
             {
-                await namespaceManager.CreateTopicAsync(new TopicDescription(TopicName));
+                await namespaceManager.CreateTopicAsync(new TopicDescription(TopicName) { SupportOrdering = false });
             }
         }
     }

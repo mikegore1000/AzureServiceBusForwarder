@@ -1,6 +1,5 @@
 ﻿using System;
 using FakeItEasy;
-using NServiceBus.Logging;
 using NUnit.Framework;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
@@ -11,13 +10,13 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         private const int ReceiveBatchSize = 1;
         private const int PrefetchCount = 1;
         private IMessageForwarder messageForwarderFake;
-        private ILog loggerFake;
+        private ILogger loggerFake;
 
         [SetUp]
         public void Setup()
         {
             messageForwarderFake = A.Fake<IMessageForwarder>();
-            loggerFake = A.Fake<ILog>();
+            loggerFake = A.Fake<ILogger>();
         }
 
         [Test]

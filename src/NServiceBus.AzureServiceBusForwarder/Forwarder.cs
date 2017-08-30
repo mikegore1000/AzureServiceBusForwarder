@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using NServiceBus.Logging;
 
 namespace NServiceBus.AzureServiceBusForwarder
 {
@@ -15,11 +13,11 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
-        private readonly ILog logger;
+        private readonly ILogger logger;
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
-        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, ILog logger)
+        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, ILogger logger)
         {
             Guard.IsNotNull(sourceConfiguration, nameof(sourceConfiguration));
             Guard.IsNotNull(destinationConfiguration, nameof(destinationConfiguration));

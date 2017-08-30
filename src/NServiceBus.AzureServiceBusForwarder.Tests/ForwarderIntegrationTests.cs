@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using NServiceBus.Logging;
 using NUnit.Framework;
 using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
 using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
@@ -24,7 +23,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public async Task Setup()
         {
             destinationQueue = GetType().Name;
-            var loggerFake = A.Fake<ILog>();
+            var loggerFake = A.Fake<ILogger>();
             messageForwarder = A.Fake<IMessageForwarder>();
 
             await CreateQueue(destinationQueue);

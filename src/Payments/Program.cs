@@ -63,7 +63,7 @@ namespace Payments
             var forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 1000),
                 new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")),
-                LogManager.GetLogger<Forwarder>());
+                new Logger(LogManager.GetLogger<Forwarder>()));
 
             await forwarder.CreateSubscriptionEntitiesIfRequired();
             forwarder.Start();
@@ -84,6 +84,21 @@ namespace Payments
                     message.Properties["NServiceBus.MessageIntent"] = "Publish";
                     message.Properties["NServiceBus.Transport.Encoding"] = "application/octect-stream";
             });
+        }
+
+        private class Logger : ILogger
+        {
+            private readonly ILog logger;
+
+            public Logger(ILog logger)
+            {
+                this.logger = logger;
+            }
+
+            public void Info(string message)
+            {
+                logger.Info(message);
+            }
         }
     }
 }

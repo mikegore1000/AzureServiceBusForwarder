@@ -34,7 +34,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());            
             await queueClient.SendBatchAsync(messagesToForward);
-            var receivedMessages = await queueClient.ReceiveBatchAsync(2);
+            var receivedMessages = await queueClient.ReceiveBatchAsync(100);
             int messagesForwarded = 0;
             A.CallTo(endpointFake).Invokes(() => Interlocked.Increment(ref messagesForwarded));
 

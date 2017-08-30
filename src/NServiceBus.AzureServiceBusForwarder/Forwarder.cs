@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
@@ -66,16 +67,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             while (true)
             {
                 var messages = await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize);
-                var sentMessageTokens = new List<Guid>();
-                var sendTasks = new List<Task>();
-
-                foreach (var message in messages)
-                {
-                    sendTasks.Add(messageForwarder.ForwardMessage(message));
-                    sentMessageTokens.Add(message.LockToken);
-                }
-
-                await Task.WhenAll(sendTasks).ConfigureAwait(false);
+                var sentMessageTokens = await messageForwarder.ForwardMessages(messages);
                 await receiver.CompleteMessages(sentMessageTokens.ToArray());
             }
         }

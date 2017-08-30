@@ -11,13 +11,13 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
     {
         private const int ReceiveBatchSize = 1;
         private const int PrefetchCount = 1;
-        private IEndpointInstance endpointFake;
+        private IMessageForwarder messageForwarderFake;
         private ILog loggerFake;
 
         [SetUp]
         public void Setup()
         {
-            endpointFake = A.Fake<IEndpointInstance>();
+            messageForwarderFake = A.Fake<IMessageForwarder>();
             loggerFake = A.Fake<ILog>();
         }
 
@@ -26,7 +26,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 null,
-                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
+                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 message => typeof(TestMessage),
                 new Serializer.JsonSerializer(),
                 loggerFake));
@@ -48,7 +48,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
+                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 null,
                 new Serializer.JsonSerializer(),
                 loggerFake));
@@ -59,7 +59,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake), 
+                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake), 
                 message => typeof(TestMessage),
                 null,
                 loggerFake));
@@ -70,7 +70,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
+                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 message => typeof(TestMessage),
                 new Serializer.JsonSerializer(),
                 null));

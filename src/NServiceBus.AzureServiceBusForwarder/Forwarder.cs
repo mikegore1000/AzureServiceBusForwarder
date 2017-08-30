@@ -18,7 +18,6 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILog logger;
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
-        private readonly NServiceBusMessageForwarder messageForwarder;
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
         public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer, ILog logger)
@@ -32,7 +31,6 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.sourceConfiguration = sourceConfiguration;
             this.destinationConfiguration = destinationConfiguration;
             this.logger = logger;
-            this.messageForwarder = new NServiceBusMessageForwarder(destinationConfiguration.DestinationQueue, destinationConfiguration.Endpoint, messageMapper, serializer);
             this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 
@@ -70,6 +68,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         private async Task PollMessageReceiever(BatchMessageReceiver receiver) // TODO: Support cancellation
         {
             var stopwatch = new Stopwatch();
+            var messageForwarder = this.destinationConfiguration.MessageForwarderFactory();
 
             while (true)
             {

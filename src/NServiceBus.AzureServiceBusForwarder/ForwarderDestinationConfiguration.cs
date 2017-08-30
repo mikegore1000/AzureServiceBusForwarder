@@ -1,18 +1,20 @@
-﻿namespace NServiceBus.AzureServiceBusForwarder
+﻿using System;
+
+namespace NServiceBus.AzureServiceBusForwarder
 {
     public class ForwarderDestinationConfiguration
     {
-        public ForwarderDestinationConfiguration(string destinationQueue, IEndpointInstance endpoint)
+        public ForwarderDestinationConfiguration(string destinationQueue, Func<IMessageForwarder> messageForwarderFactory)
         {
             Guard.IsNotNullOrEmpty(destinationQueue, nameof(destinationQueue));
-            Guard.IsNotNull(endpoint, nameof(endpoint));
+            Guard.IsNotNull(messageForwarderFactory, nameof(messageForwarderFactory));
 
             DestinationQueue = destinationQueue;
-            Endpoint = endpoint;
+            MessageForwarderFactory = messageForwarderFactory;
         }
 
         public string DestinationQueue { get; }
 
-        public IEndpointInstance Endpoint { get; }
+        public Func<IMessageForwarder> MessageForwarderFactory { get; }
     }
 }

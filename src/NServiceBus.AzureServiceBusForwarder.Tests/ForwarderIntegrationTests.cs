@@ -14,7 +14,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
     {
         private const string TopicName = "sourceTopic";
         private string destinationQueue;
-        private IEndpointInstance endpointFake;
+        private IMessageForwarder messageForwarder;
         private string namespaceConnectionString;
         private NamespaceManager namespaceManager;
         private Forwarder forwarder;
@@ -25,7 +25,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             destinationQueue = GetType().Name;
             var loggerFake = A.Fake<ILog>();
-            endpointFake = A.Fake<IEndpointInstance>();
+            messageForwarder = A.Fake<IMessageForwarder>();
 
             await CreateQueue(destinationQueue);
 
@@ -41,7 +41,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
-                new ForwarderDestinationConfiguration(destinationQueue, endpointFake),
+                new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder),
                 message => typeof(TestMessage),
                 new AzureServiceBusForwarder.Serializers.JsonSerializer(),
                 loggerFake);
@@ -58,7 +58,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             var tcs = new TaskCompletionSource<string>();
             await topicClient.SendAsync(eventMessage);
 
-            A.CallTo(endpointFake).Invokes(() => tcs.SetResult("kfd"));
+            A.CallTo(messageForwarder).Invokes(() => tcs.SetResult("kfd"));
 
             if (!tcs.Task.Wait(TimeSpan.FromSeconds(10)))
             {

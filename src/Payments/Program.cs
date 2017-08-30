@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using NServiceBus;
@@ -58,15 +59,33 @@ namespace Payments
             transport.TransportType(TransportType.Amqp); // Use this rather than netmessaging, allows more connections to the namespace and is an open standard
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
+
             var forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 1000),
-                new ForwarderDestinationConfiguration("Payments", endpoint),
+                new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")),
                 m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
                 new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer(),
                 LogManager.GetLogger<Forwarder>());
 
             await forwarder.CreateSubscriptionEntitiesIfRequired();
             forwarder.Start();
+        }
+
+        private static readonly Dictionary<string, string> messageTypeMapper = new Dictionary<string, string>()
+        {
+            {"Orders.Events.OrderAccepted", "Orders.Events.OrderAccepted, Payments"}
+        };
+
+        private static IMessageForwarder CreateMessageForwarder(string paymentsConnectionString, string destinationQueue)
+        {
+            return new AzureServiceBusMessageForwarder(
+                QueueClient.CreateFromConnectionString(paymentsConnectionString, destinationQueue),
+                (message) =>
+                {
+                    message.Properties["NServiceBus.EnclosedMessageTypes"] = messageTypeMapper[message.Properties["Asos.EnclosedType"].ToString()];
+                    message.Properties["NServiceBus.MessageIntent"] = "Publish";
+                    message.Properties["NServiceBus.Transport.Encoding"] = "application/octect-stream";
+            });
         }
     }
 }

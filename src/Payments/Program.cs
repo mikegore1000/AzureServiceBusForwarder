@@ -27,7 +27,7 @@ namespace Payments
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
             
             var defaultFactory = LogManager.Use<DefaultFactory>();
-            defaultFactory.Level(LogLevel.Debug);
+            defaultFactory.Level(LogLevel.Info);
 
             var endpointConfig = new EndpointConfiguration("Payments");
             if (!string.IsNullOrEmpty(license))

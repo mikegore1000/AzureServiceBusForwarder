@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.Logging;
 using NUnit.Framework;
 using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
 
@@ -21,6 +22,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [SetUp]
         public async Task Setup()
         {
+            var loggerFake = A.Fake<ILog>();
             endpointFake = A.Fake<IEndpointInstance>();
             namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
@@ -36,7 +38,8 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
                 new ForwarderDestinationConfiguration(DestinationQueue, endpointFake),
                 message => typeof(TestMessage),
-                new AzureServiceBusForwarder.Serializers.JsonSerializer());
+                new AzureServiceBusForwarder.Serializers.JsonSerializer(),
+                loggerFake);
         }
 
         [Test]

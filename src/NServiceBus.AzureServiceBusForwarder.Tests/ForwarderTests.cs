@@ -1,5 +1,6 @@
 ﻿using System;
 using FakeItEasy;
+using NServiceBus.Logging;
 using NUnit.Framework;
 using Serializer = NServiceBus.AzureServiceBusForwarder.Serializers;
 
@@ -11,11 +12,13 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         private const int ReceiveBatchSize = 1;
         private const int PrefetchCount = 1;
         private IEndpointInstance endpointFake;
+        private ILog loggerFake;
 
         [SetUp]
         public void Setup()
         {
             endpointFake = A.Fake<IEndpointInstance>();
+            loggerFake = A.Fake<ILog>();
         }
 
         [Test]
@@ -25,7 +28,8 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 null,
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 message => typeof(TestMessage),
-                new Serializer.JsonSerializer()));
+                new Serializer.JsonSerializer(),
+                loggerFake));
         }
 
         [Test]
@@ -35,7 +39,8 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 null,
                 message => typeof(TestMessage),
-                new Serializer.JsonSerializer()));
+                new Serializer.JsonSerializer(),
+                loggerFake));
         }
 
         [Test]
@@ -45,7 +50,8 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
                 null,
-                new Serializer.JsonSerializer()));
+                new Serializer.JsonSerializer(),
+                loggerFake));
         }
 
         [Test]
@@ -55,6 +61,18 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", endpointFake), 
                 message => typeof(TestMessage),
+                null,
+                loggerFake));
+        }
+
+        [Test]
+        public void when_creating_a_forwarder_a_logger_is_required()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Forwarder(
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
+                new ForwarderDestinationConfiguration("DestinationQueue", endpointFake),
+                message => typeof(TestMessage),
+                new Serializer.JsonSerializer(),
                 null));
         }
     }

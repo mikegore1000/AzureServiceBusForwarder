@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
+using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
@@ -17,9 +18,10 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         private QueueClient queueClient;
 
         [SetUp]
-        public void Setup()
+        public async Task Setup()
         {
-            const string destinationQueue = "destinationQueue";
+            var destinationQueue = GetType().Name;
+            await CreateQueue(destinationQueue);
             var queueConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             queueClient = QueueClient.CreateFromConnectionString(queueConnectionString, destinationQueue);
 
@@ -32,7 +34,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             var messagesToForward = new List<BrokeredMessage>();
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());
-            messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());            
+            messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());
             await queueClient.SendBatchAsync(messagesToForward);
             var receivedMessages = await queueClient.ReceiveBatchAsync(100);
             int messagesForwarded = 0;

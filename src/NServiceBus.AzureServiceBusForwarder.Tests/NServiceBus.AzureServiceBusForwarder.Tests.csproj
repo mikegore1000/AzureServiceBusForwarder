@@ -60,6 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AzureServiceBusMessageForwarderIntegrationTests.cs" />
+    <Compile Include="AzureServiceBusMessageForwarderTests.cs" />
     <Compile Include="BatchMessageReceiverIntegrationTests.cs" />
     <Compile Include="BatchMessageReceiverTests.cs" />
     <Compile Include="ForwarderDestinationConfigurationTests.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="NServiceBusMessageForwarderIntegrationTests.cs" />
     <Compile Include="NServiceBusMessageForwarderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueueHelper.cs" />
     <Compile Include="Serializers\JsonSerializerTests.cs" />
     <Compile Include="TestMessage.cs" />
   </ItemGroup>

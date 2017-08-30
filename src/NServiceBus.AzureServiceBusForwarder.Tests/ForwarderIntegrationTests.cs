@@ -6,13 +6,14 @@ using Microsoft.ServiceBus.Messaging;
 using NServiceBus.Logging;
 using NUnit.Framework;
 using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
+using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
     public class ForwarderIntegrationTests
     {
         private const string TopicName = "sourceTopic";
-        private const string DestinationQueue = "destinationQueue";
+        private string destinationQueue;
         private IEndpointInstance endpointFake;
         private string namespaceConnectionString;
         private NamespaceManager namespaceManager;
@@ -22,8 +23,12 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [SetUp]
         public async Task Setup()
         {
+            destinationQueue = GetType().Name;
             var loggerFake = A.Fake<ILog>();
             endpointFake = A.Fake<IEndpointInstance>();
+
+            await CreateQueue(destinationQueue);
+
             namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
 
@@ -36,7 +41,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
 
             forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
-                new ForwarderDestinationConfiguration(DestinationQueue, endpointFake),
+                new ForwarderDestinationConfiguration(destinationQueue, endpointFake),
                 message => typeof(TestMessage),
                 new AzureServiceBusForwarder.Serializers.JsonSerializer(),
                 loggerFake);
@@ -66,8 +71,8 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             await forwarder.CreateSubscriptionEntitiesIfRequired();
 
-            Assert.That(await namespaceManager.SubscriptionExistsAsync(TopicName, DestinationQueue), Is.True);
-            Assert.That(await namespaceManager.QueueExistsAsync(DestinationQueue));
+            Assert.That(await namespaceManager.SubscriptionExistsAsync(TopicName, destinationQueue), Is.True);
+            Assert.That(await namespaceManager.QueueExistsAsync(destinationQueue));
         }
     }
 }

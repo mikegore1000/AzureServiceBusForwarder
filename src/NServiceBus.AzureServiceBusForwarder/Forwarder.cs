@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
@@ -11,7 +12,7 @@ namespace NServiceBus.AzureServiceBusForwarder
 {
     public class Forwarder
     {
-        private const int NumberOfFactories = 10; // TODO: Make this configurable
+        private const int NumberOfFactories = 1; // TODO: Make this configurable
 
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
@@ -68,11 +69,19 @@ namespace NServiceBus.AzureServiceBusForwarder
 
         private async Task PollMessageReceiever(BatchMessageReceiver receiver) // TODO: Support cancellation
         {
+            var stopwatch = new Stopwatch();
+
             while (true)
             {
-                var messages = await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize);
-                var sentMessageTokens = await messageForwarder.ForwardMessages(messages);
-                await receiver.CompleteMessages(sentMessageTokens.ToArray());
+                stopwatch.Restart();
+                var messages = (await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize).ConfigureAwait(false)).ToArray();
+                logger.Info($"Received {messages.Length} messages from the source. Took {stopwatch.Elapsed}");
+                stopwatch.Restart();
+                var sentMessageTokens = (await messageForwarder.ForwardMessages(messages).ConfigureAwait(false)).ToArray();
+                logger.Info($"Forwarded {sentMessageTokens.Length} messages to the destination. Took {stopwatch.Elapsed}");
+                stopwatch.Restart();
+                await receiver.CompleteMessages(sentMessageTokens).ConfigureAwait(false);
+                logger.Info($"Completed {sentMessageTokens.Length} messages at the source. Took {stopwatch.Elapsed}");
             }
         }
 

@@ -18,7 +18,7 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILog logger;
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
-        private readonly MessageForwarder messageForwarder;
+        private readonly NServiceBusMessageForwarder messageForwarder;
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
         public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer, ILog logger)
@@ -32,7 +32,7 @@ namespace NServiceBus.AzureServiceBusForwarder
             this.sourceConfiguration = sourceConfiguration;
             this.destinationConfiguration = destinationConfiguration;
             this.logger = logger;
-            this.messageForwarder = new MessageForwarder(destinationConfiguration.DestinationQueue, destinationConfiguration.Endpoint, messageMapper, serializer);
+            this.messageForwarder = new NServiceBusMessageForwarder(destinationConfiguration.DestinationQueue, destinationConfiguration.Endpoint, messageMapper, serializer);
             this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 

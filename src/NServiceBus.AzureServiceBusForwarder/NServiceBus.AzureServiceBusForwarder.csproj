@@ -60,7 +60,8 @@
     <Compile Include="ForwarderDestinationConfiguration.cs" />
     <Compile Include="ForwarderSourceConfiguration.cs" />
     <Compile Include="Guard.cs" />
-    <Compile Include="MessageForwarder.cs" />
+    <Compile Include="IMessageForwarder.cs" />
+    <Compile Include="NServiceBusMessageForwarder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serializers\ISerializer.cs" />
     <Compile Include="Serializers\JsonSerializer.cs" />

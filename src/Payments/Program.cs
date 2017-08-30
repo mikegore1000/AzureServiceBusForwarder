@@ -48,7 +48,7 @@ namespace Payments
             var globalConcurrency = numberOfReceivers * perReceiverConcurrency;
             
             endpointConfig.LimitMessageProcessingConcurrencyTo(globalConcurrency);
-            factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 3); //Bus receiver, forwarder sender, bus sender
+            factories.NumberOfMessagingFactoriesPerNamespace(numberOfReceivers * 2); //Bus receiver, bus sender
             transport.NumberOfClientsPerEntity(numberOfReceivers);
             factories.BatchFlushInterval(TimeSpan.FromMilliseconds(100));
 

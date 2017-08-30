@@ -19,11 +19,10 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
-        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ILog logger)
+        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, ILog logger)
         {
             Guard.IsNotNull(sourceConfiguration, nameof(sourceConfiguration));
             Guard.IsNotNull(destinationConfiguration, nameof(destinationConfiguration));
-            Guard.IsNotNull(messageMapper, nameof(messageMapper));
             Guard.IsNotNull(logger, nameof(logger));
 
             this.sourceConfiguration = sourceConfiguration;

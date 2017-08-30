@@ -42,7 +42,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             forwarder = new Forwarder(
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
                 new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder),
-                message => typeof(TestMessage),
                 loggerFake);
         }
 

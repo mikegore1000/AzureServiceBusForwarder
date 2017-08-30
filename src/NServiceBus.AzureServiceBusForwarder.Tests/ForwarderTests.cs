@@ -26,7 +26,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 null,
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
-                message => typeof(TestMessage),
                 loggerFake));
         }
 
@@ -35,17 +34,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                null,
-                message => typeof(TestMessage),
-                loggerFake));
-        }
-
-        [Test]
-        public void when_creating_a_forwarder_a_message_mapper_is_required()
-        {
-            Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 null,
                 loggerFake));
         }
@@ -56,7 +44,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
-                message => typeof(TestMessage),
                 null));
         }
     }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using NServiceBus.AzureServiceBusForwarder.Serializers;
 using NServiceBus.Logging;
 
 namespace NServiceBus.AzureServiceBusForwarder
@@ -20,12 +19,11 @@ namespace NServiceBus.AzureServiceBusForwarder
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
-        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ISerializer serializer, ILog logger)
+        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, Func<BrokeredMessage, Type> messageMapper, ILog logger)
         {
             Guard.IsNotNull(sourceConfiguration, nameof(sourceConfiguration));
             Guard.IsNotNull(destinationConfiguration, nameof(destinationConfiguration));
             Guard.IsNotNull(messageMapper, nameof(messageMapper));
-            Guard.IsNotNull(serializer, nameof(serializer));
             Guard.IsNotNull(logger, nameof(logger));
 
             this.sourceConfiguration = sourceConfiguration;

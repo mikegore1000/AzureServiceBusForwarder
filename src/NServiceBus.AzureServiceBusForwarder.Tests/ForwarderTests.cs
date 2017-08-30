@@ -2,7 +2,6 @@
 using FakeItEasy;
 using NServiceBus.Logging;
 using NUnit.Framework;
-using Serializer = NServiceBus.AzureServiceBusForwarder.Serializers;
 
 namespace NServiceBus.AzureServiceBusForwarder.Tests
 {
@@ -28,7 +27,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 null,
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 message => typeof(TestMessage),
-                new Serializer.JsonSerializer(),
                 loggerFake));
         }
 
@@ -39,7 +37,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 null,
                 message => typeof(TestMessage),
-                new Serializer.JsonSerializer(),
                 loggerFake));
         }
 
@@ -49,18 +46,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
-                null,
-                new Serializer.JsonSerializer(),
-                loggerFake));
-        }
-
-        [Test]
-        public void when_creating_a_forwarder_a_serializer_is_required()
-        {
-            Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
-                new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake), 
-                message => typeof(TestMessage),
                 null,
                 loggerFake));
         }
@@ -72,7 +57,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 message => typeof(TestMessage),
-                new Serializer.JsonSerializer(),
                 null));
         }
     }

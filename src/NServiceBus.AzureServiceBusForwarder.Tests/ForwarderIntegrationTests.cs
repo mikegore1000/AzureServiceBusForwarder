@@ -43,7 +43,6 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500, prefetchCount: 500),
                 new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder),
                 message => typeof(TestMessage),
-                new AzureServiceBusForwarder.Serializers.JsonSerializer(),
                 loggerFake);
         }
 

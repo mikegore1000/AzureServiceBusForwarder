@@ -64,7 +64,6 @@ namespace Payments
                 new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 1000),
                 new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")),
                 m => Type.GetType($"{(string)m.Properties["Asos.EnclosedType"]}, Payments"),
-                new NServiceBus.AzureServiceBusForwarder.Serializers.JsonSerializer(),
                 LogManager.GetLogger<Forwarder>());
 
             await forwarder.CreateSubscriptionEntitiesIfRequired();

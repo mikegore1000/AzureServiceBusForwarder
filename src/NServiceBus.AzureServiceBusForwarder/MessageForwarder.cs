@@ -55,13 +55,15 @@ namespace NServiceBus.AzureServiceBusForwarder
         public async Task<IEnumerable<Guid>> ForwardMessages(IEnumerable<BrokeredMessage> messages)
         {
             var lockTokens = new List<Guid>();
+            var forwardingTasks = new List<Task>();
 
             foreach (var message in messages)
             {
-                await ForwardMessage(message);
+                forwardingTasks.Add(ForwardMessage(message));
                 lockTokens.Add(message.LockToken);
             }
 
+            await Task.WhenAll(forwardingTasks).ConfigureAwait(false);
             return lockTokens;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus.Messaging;
@@ -34,9 +35,12 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());            
             await queueClient.SendBatchAsync(messagesToForward);
             var receivedMessages = await queueClient.ReceiveBatchAsync(2);
+            int messagesForwarded = 0;
+            A.CallTo(endpointFake).Invokes(() => Interlocked.Increment(ref messagesForwarded));
 
             var returnedLockTokens = await forwarder.ForwardMessages(receivedMessages);
 
+            Assert.That(messagesForwarded, Is.EqualTo(2));
             Assert.That(returnedLockTokens.Count(), Is.EqualTo(2));
             CollectionAssert.AllItemsAreUnique(returnedLockTokens);
         }

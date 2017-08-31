@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
-namespace NServiceBus.AzureServiceBusForwarder
+namespace AzureServiceBusForwarder
 {
     public class Forwarder
     {

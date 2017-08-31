@@ -7,8 +7,8 @@
     <ProjectGuid>{465AFB04-FD8B-45B4-8C0D-8D0936F612FD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NServiceBus.AzureServiceBusForwarder.Tests</RootNamespace>
-    <AssemblyName>NServiceBus.AzureServiceBusForwarder.Tests</AssemblyName>
+    <RootNamespace>AzureServiceBusForwarder.Tests</RootNamespace>
+    <AssemblyName>AzureServiceBusForwarder.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

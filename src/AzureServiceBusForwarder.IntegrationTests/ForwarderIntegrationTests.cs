@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
-using NServiceBus.AzureServiceBusForwarder;
 using NUnit.Framework;
 
 namespace AzureServiceBusForwarder.IntegrationTests

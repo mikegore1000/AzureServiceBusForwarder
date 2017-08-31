@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBusForwarder
+namespace AzureServiceBusForwarder
 {
     public class ForwarderSourceConfiguration
     {

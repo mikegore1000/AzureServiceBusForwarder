@@ -1,4 +1,4 @@
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.Tests
 {
     public class TestMessage
     {

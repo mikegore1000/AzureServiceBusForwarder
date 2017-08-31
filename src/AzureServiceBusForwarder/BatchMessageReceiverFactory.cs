@@ -1,6 +1,6 @@
 using Microsoft.ServiceBus.Messaging;
 
-namespace NServiceBus.AzureServiceBusForwarder
+namespace AzureServiceBusForwarder
 {
     internal class BatchMessageReceiverFactory
     {

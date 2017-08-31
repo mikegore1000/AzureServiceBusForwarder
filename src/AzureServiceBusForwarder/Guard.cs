@@ -1,6 +1,6 @@
 using System;
 
-namespace NServiceBus.AzureServiceBusForwarder
+namespace AzureServiceBusForwarder
 {
     internal static class Guard
     {

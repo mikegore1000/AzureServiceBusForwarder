@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AzureServiceBusForwarder;
 using Microsoft.ServiceBus.Messaging;
 using NServiceBus;
-using NServiceBus.AzureServiceBusForwarder;
 using NServiceBus.Logging;
 using NServiceBus.Transport.AzureServiceBus;
 

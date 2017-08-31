@@ -2,7 +2,7 @@
 using FakeItEasy;
 using NUnit.Framework;
 
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.Tests
 {
     [TestFixture]
     public class ForwarderTests

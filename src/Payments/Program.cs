@@ -52,7 +52,7 @@ namespace Payments
             transport.NumberOfClientsPerEntity(numberOfReceivers);
             factories.BatchFlushInterval(TimeSpan.FromMilliseconds(100));
 
-            receivers.PrefetchCount(500); // The more we prefetch, the better the throughput will be, needs to be balanced though as you can only pull so many messages per batch
+            receivers.PrefetchCount(1000); // The more we prefetch, the better the throughput will be, needs to be balanced though as you can only pull so many messages per batch
             topology.NumberOfEntitiesInBundle(1); // Only use 1 bundle topic, there is no benefit to using more and Particular are going to remove this support moving forward
             transport.Transactions(TransportTransactionMode.ReceiveOnly); // Use peek lock, vastly quicker than 
             transport.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream); // Need to use this for non-NSB integrations - will be what Particular use moving forward too

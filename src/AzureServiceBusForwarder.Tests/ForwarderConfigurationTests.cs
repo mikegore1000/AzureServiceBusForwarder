@@ -31,5 +31,16 @@ namespace AzureServiceBusForwarder.Tests
                 new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
                 .UsingLogger(null));
         }
+
+        [Test]
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void when_creating_the_configuration_and_the_concurrency_is_specified_then_it_must_be_a_positive_value(int concurrency)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ForwarderConfiguration(
+                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1),
+                new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
+                .WithConcurrencyOf(concurrency));
+        }
     }
 }

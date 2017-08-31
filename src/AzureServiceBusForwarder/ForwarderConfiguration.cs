@@ -17,11 +17,20 @@
 
         internal ILogger Logger { get; private set; } = new NullLogger();
 
+        internal int Concurrency { get; private set; } = 1;
+
 
         public ForwarderConfiguration UsingLogger(ILogger logger)
         {
             Guard.IsNotNull(logger, nameof(logger));
             Logger = logger;
+            return this;
+        }
+
+        public ForwarderConfiguration WithConcurrencyOf(int concurrency)
+        {
+            Guard.IsGreaterThan(0, concurrency, nameof(concurrency));
+            Concurrency = concurrency;
             return this;
         }
     }

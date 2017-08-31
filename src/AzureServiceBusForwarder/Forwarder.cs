@@ -9,8 +9,7 @@ namespace AzureServiceBusForwarder
 {
     public class Forwarder
     {
-        private const int NumberOfFactories = 1; // TODO: Make this configurable
-
+        private readonly int concurrency;
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILogger logger;
@@ -24,6 +23,7 @@ namespace AzureServiceBusForwarder
             this.sourceConfiguration = configuration.Source;
             this.destinationConfiguration = configuration.Destination;
             this.logger = configuration.Logger;
+            this.concurrency = configuration.Concurrency;
             this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 
@@ -79,7 +79,7 @@ namespace AzureServiceBusForwarder
 
         private void CreateQueueClients()
         {
-            for (int i = 0; i < NumberOfFactories; i++)
+            for (int i = 0; i < concurrency; i++)
             {
                 var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationConfiguration.DestinationQueue);
                 messageReceivers.Add(batchMessageReceiverFactory.Create(client));

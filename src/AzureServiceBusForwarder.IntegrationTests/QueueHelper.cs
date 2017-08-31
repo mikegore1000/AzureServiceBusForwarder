@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus;
 
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.IntegrationTests
 {
     internal class QueueHelper
     {

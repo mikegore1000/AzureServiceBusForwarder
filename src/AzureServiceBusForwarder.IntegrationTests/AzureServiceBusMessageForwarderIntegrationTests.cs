@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.AzureServiceBusForwarder;
 using NUnit.Framework;
-using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
 
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.IntegrationTests
 {
     [TestFixture]
     public class AzureServiceBusMessageForwarderIntegrationTests
@@ -20,7 +19,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public async Task Setup()
         {
             string destinationQueue = GetType().Name;
-            await CreateQueue(destinationQueue);
+            await QueueHelper.CreateQueue(destinationQueue);
             var connectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             queueClient = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
         }

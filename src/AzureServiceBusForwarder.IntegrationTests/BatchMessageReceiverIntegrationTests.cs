@@ -2,11 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.AzureServiceBusForwarder;
 using NUnit.Framework;
-using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
-using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
 
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.IntegrationTests
 {
     [TestFixture]
     public class BatchMessageReceiverIntegrationTests
@@ -17,7 +16,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         public async Task Setup()
         {
             string destinationQueue = GetType().Name;
-            await CreateQueue(destinationQueue);
+            await QueueHelper.CreateQueue(destinationQueue);
             var queueConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             queueClient = QueueClient.CreateFromConnectionString(queueConnectionString, destinationQueue);
         }
@@ -25,7 +24,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
         [Test]
         public async Task when_receiving_a_batch_messages_are_returned_and_can_be_completed()
         {   
-            var message = await CreateMessageWithJsonBody();
+            var message = await MessageFactory.CreateMessageWithJsonBody();
             
             var receiver = new BatchMessageReceiver(queueClient);
             await queueClient.SendAsync(message);

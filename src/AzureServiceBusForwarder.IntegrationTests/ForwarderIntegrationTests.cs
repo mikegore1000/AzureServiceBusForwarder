@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
+using NServiceBus.AzureServiceBusForwarder;
 using NUnit.Framework;
-using static NServiceBus.AzureServiceBusForwarder.Tests.MessageFactory;
-using static NServiceBus.AzureServiceBusForwarder.Tests.QueueHelper;
 
-namespace NServiceBus.AzureServiceBusForwarder.Tests
+namespace AzureServiceBusForwarder.IntegrationTests
 {
     public class ForwarderIntegrationTests
     {
@@ -26,7 +25,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             var loggerFake = A.Fake<ILogger>();
             messageForwarder = A.Fake<IMessageForwarder>();
 
-            await CreateQueue(destinationQueue);
+            await QueueHelper.CreateQueue(destinationQueue);
 
             namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
@@ -51,7 +50,7 @@ namespace NServiceBus.AzureServiceBusForwarder.Tests
             forwarder.Start();
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, TopicName);
-            var eventMessage = await CreateMessageWithJsonBody();
+            var eventMessage = await MessageFactory.CreateMessageWithJsonBody();
             var tcs = new TaskCompletionSource<string>();
             await topicClient.SendAsync(eventMessage);
 

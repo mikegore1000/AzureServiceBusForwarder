@@ -58,6 +58,7 @@
     <Compile Include="Guard.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IMessageForwarder.cs" />
+    <Compile Include="NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

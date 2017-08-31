@@ -17,15 +17,13 @@ namespace AzureServiceBusForwarder
         private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
-        public Forwarder(ForwarderSourceConfiguration sourceConfiguration, ForwarderDestinationConfiguration destinationConfiguration, ILogger logger)
+        public Forwarder(ForwarderConfiguration configuration)
         {
-            Guard.IsNotNull(sourceConfiguration, nameof(sourceConfiguration));
-            Guard.IsNotNull(destinationConfiguration, nameof(destinationConfiguration));
-            Guard.IsNotNull(logger, nameof(logger));
+            Guard.IsNotNull(configuration, nameof(configuration));
 
-            this.sourceConfiguration = sourceConfiguration;
-            this.destinationConfiguration = destinationConfiguration;
-            this.logger = logger;
+            this.sourceConfiguration = configuration.Source;
+            this.destinationConfiguration = configuration.Destination;
+            this.logger = configuration.Logger;
             this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 

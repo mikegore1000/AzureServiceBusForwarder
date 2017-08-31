@@ -21,7 +21,6 @@ namespace AzureServiceBusForwarder.IntegrationTests
         public async Task Setup()
         {
             destinationQueue = GetType().Name;
-            var loggerFake = A.Fake<ILogger>();
             messageForwarder = A.Fake<IMessageForwarder>();
 
             await QueueHelper.CreateQueue(destinationQueue);
@@ -37,9 +36,9 @@ namespace AzureServiceBusForwarder.IntegrationTests
             await namespaceManager.CreateTopicAsync(TopicName);
 
             forwarder = new Forwarder(
-                new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500),
-                new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder),
-                loggerFake);
+                new ForwarderConfiguration(
+                    new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500),
+                    new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder)));
         }
 
         [Test]

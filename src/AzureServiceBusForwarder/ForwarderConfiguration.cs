@@ -15,7 +15,7 @@
 
         internal ForwarderDestinationConfiguration Destination { get; }
 
-        internal ILogger Logger { get; private set; }
+        internal ILogger Logger { get; private set; } = new NullLogger();
 
 
         public ForwarderConfiguration UsingLogger(ILogger logger)

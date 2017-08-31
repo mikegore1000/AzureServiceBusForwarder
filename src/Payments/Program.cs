@@ -60,11 +60,12 @@ namespace Payments
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
 
-            var forwarder = new Forwarder(
-                new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 1000),
-                new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")),
-                new Logger(LogManager.GetLogger<Forwarder>()));
+            var forwarderConfig = new ForwarderConfiguration(
+                    new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 1000),
+                    new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")))
+                .UsingLogger(new Logger(LogManager.GetLogger<Forwarder>()));
 
+            var forwarder = new Forwarder(forwarderConfig);
             await forwarder.CreateSubscriptionEntitiesIfRequired();
             forwarder.Start();
         }

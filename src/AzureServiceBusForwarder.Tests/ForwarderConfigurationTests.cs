@@ -24,7 +24,7 @@ namespace AzureServiceBusForwarder.Tests
         }
 
         [Test]
-        public void when_creating_the_configuration_and_a_loggeris_be_specified_it_is_required()
+        public void when_creating_the_configuration_and_a_logger_is_specified_then_it_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
                 new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1),

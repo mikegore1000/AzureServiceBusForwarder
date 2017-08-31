@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders", "Orders\Orders.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payments", "Payments\Payments.csproj", "{A6EFA556-6368-40F8-98F0-69FF4AEF6A1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBusForwarder", "NServiceBus.AzureServiceBusForwarder\NServiceBus.AzureServiceBusForwarder.csproj", "{45D359F4-C16B-4A95-AD99-DBDDCCD5E87C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureServiceBusForwarder", "AzureServiceBusForwarder\AzureServiceBusForwarder.csproj", "{45D359F4-C16B-4A95-AD99-DBDDCCD5E87C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.AzureServiceBusForwarder.Tests", "NServiceBus.AzureServiceBusForwarder.Tests\NServiceBus.AzureServiceBusForwarder.Tests.csproj", "{465AFB04-FD8B-45B4-8C0D-8D0936F612FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureServiceBusForwarder.Tests", "AzureServiceBusForwarder.Tests\AzureServiceBusForwarder.Tests.csproj", "{465AFB04-FD8B-45B4-8C0D-8D0936F612FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

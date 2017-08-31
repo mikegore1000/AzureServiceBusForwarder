@@ -63,7 +63,8 @@ namespace Payments
             var forwarderConfig = new ForwarderConfiguration(
                     new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 1000),
                     new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")))
-                .UsingLogger(new Logger(LogManager.GetLogger<Forwarder>()));
+                .UsingLogger(new Logger(LogManager.GetLogger<Forwarder>()))
+                .WithConcurrencyOf(3);
 
             var forwarder = new Forwarder(forwarderConfig);
             await forwarder.CreateSubscriptionEntitiesIfRequired();

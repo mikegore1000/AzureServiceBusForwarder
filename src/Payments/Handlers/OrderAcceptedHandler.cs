@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NServiceBus;
-using Payments.Events;
+using Orders.Events;
 
 namespace Payments.Handlers
 {

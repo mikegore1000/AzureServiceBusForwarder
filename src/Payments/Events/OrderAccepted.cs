@@ -1,7 +1,7 @@
 ﻿using System;
 using NServiceBus;
 
-namespace Payments.Events
+namespace Orders.Events
 {
     public class OrderAccepted : IMessage
     {

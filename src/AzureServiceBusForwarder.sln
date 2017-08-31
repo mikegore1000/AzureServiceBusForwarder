@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureServiceBusForwarder", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureServiceBusForwarder.Tests", "AzureServiceBusForwarder.Tests\AzureServiceBusForwarder.Tests.csproj", "{465AFB04-FD8B-45B4-8C0D-8D0936F612FD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{87DA468B-E596-4926-9F7E-462C153AECEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{962AA0CD-BF87-4241-9886-24F0AB33030B} = {87DA468B-E596-4926-9F7E-462C153AECEB}
+		{A6EFA556-6368-40F8-98F0-69FF4AEF6A1A} = {87DA468B-E596-4926-9F7E-462C153AECEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7529B491-F673-484F-ACB8-35A5A43B07B6}

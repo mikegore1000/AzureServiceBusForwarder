@@ -13,5 +13,14 @@
             this.source = source;
             this.destination = destination;
         }
+
+        internal ILogger Logger { get; private set; }
+
+        public ForwarderConfiguration UsingLogger(ILogger logger)
+        {
+            Guard.IsNotNull(logger, nameof(logger));
+            Logger = logger;
+            return this;
+        }
     }
 }

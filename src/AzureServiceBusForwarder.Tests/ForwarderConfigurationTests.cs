@@ -22,5 +22,14 @@ namespace AzureServiceBusForwarder.Tests
                 new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1),
                 null));
         }
+
+        [Test]
+        public void when_creating_the_configuration_and_a_loggeris_be_specified_it_is_required()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
+                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1),
+                new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
+                .UsingLogger(null));
+        }
     }
 }

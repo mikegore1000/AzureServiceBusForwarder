@@ -84,7 +84,6 @@ namespace AzureServiceBusForwarder
             for (int i = 0; i < NumberOfFactories; i++)
             {
                 var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationConfiguration.DestinationQueue);
-                client.PrefetchCount = sourceConfiguration.PrefetchCount;
                 messageReceivers.Add(batchMessageReceiverFactory.Create(client));
             }
         }

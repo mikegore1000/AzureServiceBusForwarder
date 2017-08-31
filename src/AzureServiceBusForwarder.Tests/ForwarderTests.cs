@@ -32,7 +32,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_the_destination_configuration_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize),
                 null,
                 loggerFake));
         }
@@ -41,7 +41,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_a_forwarder_a_logger_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new Forwarder(
-                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize, PrefetchCount),
+                new ForwarderSourceConfiguration("ConnectionString", "TestTopic", ReceiveBatchSize),
                 new ForwarderDestinationConfiguration("DestinationQueue", () => messageForwarderFake),
                 null));
         }

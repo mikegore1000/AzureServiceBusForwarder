@@ -19,7 +19,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_the_configuration_the_destination_configuration_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
-                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1, 1),
+                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1),
                 null));
         }
     }

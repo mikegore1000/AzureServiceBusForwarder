@@ -66,7 +66,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NServiceBus.AzureServiceBusForwarder\NServiceBus.AzureServiceBusForwarder.csproj">
+    <ProjectReference Include="..\AzureServiceBusForwarder\AzureServiceBusForwarder.csproj">
       <Project>{45d359f4-c16b-4a95-ad99-dbddccd5e87c}</Project>
       <Name>NServiceBus.AzureServiceBusForwarder</Name>
     </ProjectReference>

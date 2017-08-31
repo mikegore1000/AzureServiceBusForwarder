@@ -61,7 +61,7 @@ namespace Payments
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
 
             var forwarder = new Forwarder(
-                new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, 1000),
+                new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 1000, 1000),
                 new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")),
                 new Logger(LogManager.GetLogger<Forwarder>()));
 

@@ -49,7 +49,7 @@ namespace Orders
 
                 do
                 {
-                    var blockSize = messageCount >= 500 ? 500 : messageCount;
+                    var blockSize = messageCount >= 1000 ? 1000 : messageCount;
                     await SendMessages(blockSize);
                     messageCount -= blockSize;
                 } while (messageCount > 0);                

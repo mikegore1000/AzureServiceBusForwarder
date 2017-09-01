@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Channels;
 using System.Threading.Tasks;
 using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
@@ -68,6 +69,27 @@ namespace AzureServiceBusForwarder.IntegrationTests
 
             Assert.That(forwardedMessages.First().Properties.ContainsKey("Test"), Is.True);
             Assert.That(forwardedMessages.First().Properties["Test"], Is.EqualTo("Value"));
+        }
+
+        [Test]
+        public async Task when_forwarding_a_message_standard_headers_are_copied()
+        {
+            var messageId = Guid.NewGuid().ToString();
+            var contentType = "application/json";
+
+            var forwarder = new AzureServiceBusMessageForwarder(queueClient, m => m.Properties["Test"] = "Value");
+            var messageToForward = await MessageFactory.CreateMessageWithJsonBody();
+            messageToForward.MessageId = messageId;
+            messageToForward.ContentType = contentType;
+
+            queueClient.Send(messageToForward);
+
+            var receivedMessages = await queueClient.ReceiveBatchAsync(100, TimeSpan.FromSeconds(3));
+            returnedLockTokens = await forwarder.ForwardMessages(receivedMessages);
+            forwardedMessages = await queueClient.ReceiveBatchAsync(100, TimeSpan.FromSeconds(3));
+
+            Assert.That(forwardedMessages.First().MessageId, Is.EqualTo(messageId));
+            Assert.That(forwardedMessages.First().ContentType, Is.EqualTo(contentType));
         }
     }
 }

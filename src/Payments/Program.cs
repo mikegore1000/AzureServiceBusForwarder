@@ -84,7 +84,7 @@ namespace Payments
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
 
             var forwarderConfig = new ForwarderConfiguration(
-                    new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 1000),
+                    new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500),
                     new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")))
                 .UsingLogger(new Logger(LogManager.GetLogger<Forwarder>()))
                 .WithConcurrencyOf(3);
@@ -109,6 +109,7 @@ namespace Payments
                     message.Properties["NServiceBus.MessageIntent"] = "Publish";
                     message.Properties["NServiceBus.Transport.Encoding"] = "application/octect-stream";
                     message.Properties["NServiceBus.TimeSent"] = DateTimeExtensions.ToWireFormattedString(DateTime.UtcNow);
+                    message.Properties["NServiceBus.MessageId"] = message.MessageId;
                 });
         }
 

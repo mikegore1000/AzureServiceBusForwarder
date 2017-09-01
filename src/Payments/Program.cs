@@ -125,6 +125,11 @@ namespace Payments
             {
                 logger.Info(message);
             }
+
+            public void Error(string message, Exception ex)
+            {
+                logger.Error(message, ex);
+            }
         }
     }
 }

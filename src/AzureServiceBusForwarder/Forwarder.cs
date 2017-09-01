@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -65,15 +66,22 @@ namespace AzureServiceBusForwarder
 
             while (true)
             {
-                stopwatch.Restart();
-                var messages = (await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize).ConfigureAwait(false)).ToArray();
-                logger.Info($"Received {messages.Length} messages from the source. Took {stopwatch.Elapsed}");
-                stopwatch.Restart();
-                var sentMessageTokens = (await messageForwarder.ForwardMessages(messages).ConfigureAwait(false)).ToArray();
-                logger.Info($"Forwarded {sentMessageTokens.Length} messages to the destination. Took {stopwatch.Elapsed}");
-                stopwatch.Restart();
-                await receiver.CompleteMessages(sentMessageTokens).ConfigureAwait(false);
-                logger.Info($"Completed {sentMessageTokens.Length} messages at the source. Took {stopwatch.Elapsed}");
+                try
+                {
+                    stopwatch.Restart();
+                    var messages = (await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize).ConfigureAwait(false)).ToArray();
+                    logger.Info($"Received {messages.Length} messages from the source. Took {stopwatch.Elapsed}");
+                    stopwatch.Restart();
+                    var sentMessageTokens = (await messageForwarder.ForwardMessages(messages).ConfigureAwait(false)).ToArray();
+                    logger.Info($"Forwarded {sentMessageTokens.Length} messages to the destination. Took {stopwatch.Elapsed}");
+                    stopwatch.Restart();
+                    await receiver.CompleteMessages(sentMessageTokens).ConfigureAwait(false);
+                    logger.Info($"Completed {sentMessageTokens.Length} messages at the source. Took {stopwatch.Elapsed}");
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e.Message, e);
+                }
             }
         }
 

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzureServiceBusForwarder;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ServiceBus.Messaging;
 using NServiceBus;
 using NServiceBus.Logging;
@@ -21,11 +24,15 @@ namespace Payments
 
         private static async Task MainAsync()
         {
+            var instrumentationKey = Environment.GetEnvironmentVariable("Payments.InstrumentationKey", EnvironmentVariableTarget.User);
             var license = Environment.GetEnvironmentVariable("NServiceBus.License", EnvironmentVariableTarget.User);
             var ordersConnectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.User);
             var paymentsConnectionString = Environment.GetEnvironmentVariable("Payments.ConnectionString", EnvironmentVariableTarget.User);
 
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
+
+            TelemetryConfiguration.Active.InstrumentationKey = instrumentationKey;
+            var telemetryClient = new TelemetryClient();
             
             var defaultFactory = LogManager.Use<DefaultFactory>();
             defaultFactory.Level(LogLevel.Info);
@@ -35,6 +42,7 @@ namespace Payments
             {
                 endpointConfig.License(license);
             }
+
             endpointConfig.UsePersistence<InMemoryPersistence>();
             endpointConfig.SendFailedMessagesTo("error");
             var transport = endpointConfig.UseTransport<AzureServiceBusTransport>();
@@ -57,6 +65,21 @@ namespace Payments
             transport.Transactions(TransportTransactionMode.ReceiveOnly); // Use peek lock, vastly quicker than 
             transport.BrokeredMessageBodyType(SupportedBrokeredMessageBodyTypes.Stream); // Need to use this for non-NSB integrations - will be what Particular use moving forward too
             transport.TransportType(TransportType.Amqp); // Use this rather than netmessaging, allows more connections to the namespace and is an open standard
+
+            // See here for a better example of this that handles ungraceful shutdowns - https://docs.particular.net/samples/application-insights/
+            //var metricOptions = endpointConfig.EnableMetrics();
+            //metricOptions.RegisterObservers(context =>
+            //{
+            //    foreach (var duration in context.Durations)
+            //    {
+            //        duration.Register(observer: durationLength => telemetryClient.TrackMetric(new MetricTelemetry(duration.Name, durationLength.TotalMilliseconds)));
+            //    }
+
+            //    foreach (var signal in context.Signals)
+            //    {
+            //        signal.Register(observer: () => telemetryClient.TrackEvent(new EventTelemetry(signal.Name)));
+            //    }
+            //});
 
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
 
@@ -85,7 +108,8 @@ namespace Payments
                     message.Properties["NServiceBus.EnclosedMessageTypes"] = messageTypeMapper[message.Properties["Asos.EnclosedType"].ToString()];
                     message.Properties["NServiceBus.MessageIntent"] = "Publish";
                     message.Properties["NServiceBus.Transport.Encoding"] = "application/octect-stream";
-            });
+                    message.Properties["NServiceBus.TimeSent"] = message.EnqueuedTimeUtc.ToString("u"); // Add this in to ensure critical time can be recorded
+                });
         }
 
         private class Logger : ILogger

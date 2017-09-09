@@ -7,14 +7,14 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace AzureServiceBusForwarder
 {
-    public class AzureServiceBusMessageForwarder : IMessageForwarder
+    public abstract class AzureServiceBusMessageForwarder : IMessageForwarder
     {
         private static readonly Action<BrokeredMessage> DefaultMessageMutator = (message) => { };
 
         private readonly QueueClient sendClient;
         private readonly Action<BrokeredMessage> outgoingMessageMutator;
 
-        public AzureServiceBusMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator)
+        protected AzureServiceBusMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator)
         {
             Guard.IsNotNull(sendClient, nameof(sendClient));
 

@@ -41,7 +41,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         [Test]
         public async Task when_forwarding_multiple_messages_all_lock_tokens_are_returned_and_the_messages_are_forwarded()
         {
-            var forwarder = new AzureServiceBusMessageForwarder(queueClient, null);
+            var forwarder = new QueueMessageForwarder(queueClient, null);
             var messagesToForward = new List<BrokeredMessage>();
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());
             messagesToForward.Add(await MessageFactory.CreateMessageWithJsonBody());
@@ -59,7 +59,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         [Test]
         public async Task when_forwarding_a_message_with_a_custom_header_it_is_copied_to_the_message()
         {
-            var forwarder = new AzureServiceBusMessageForwarder(queueClient, m => m.Properties["Test"] = "Value");
+            var forwarder = new QueueMessageForwarder(queueClient, m => m.Properties["Test"] = "Value");
             var messageToForward = await MessageFactory.CreateMessageWithJsonBody();
             queueClient.Send(messageToForward);
 
@@ -77,7 +77,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
             var messageId = Guid.NewGuid().ToString();
             var contentType = "application/json";
 
-            var forwarder = new AzureServiceBusMessageForwarder(queueClient, m => m.Properties["Test"] = "Value");
+            var forwarder = new QueueMessageForwarder(queueClient, m => m.Properties["Test"] = "Value");
             var messageToForward = await MessageFactory.CreateMessageWithJsonBody();
             messageToForward.MessageId = messageId;
             messageToForward.ContentType = contentType;

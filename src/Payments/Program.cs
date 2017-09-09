@@ -101,7 +101,7 @@ namespace Payments
 
         private static IMessageForwarder CreateMessageForwarder(string paymentsConnectionString, string destinationQueue)
         {
-            return new AzureServiceBusMessageForwarder(
+            return new QueueMessageForwarder(
                 QueueClient.CreateFromConnectionString(paymentsConnectionString, destinationQueue),
                 (message) =>
                 {

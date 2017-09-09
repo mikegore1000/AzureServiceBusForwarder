@@ -7,14 +7,17 @@ namespace AzureServiceBusForwarder
 {
     public class TopicMessageForwarder : AzureServiceBusMessageForwarder
     {
+        private readonly TopicClient client;
+        
         public TopicMessageForwarder(TopicClient client, Action<BrokeredMessage> outgoingMessageMutator) : base(outgoingMessageMutator)
         {
             Guard.IsNotNull(client, nameof(client));
+            this.client = client;
         }
 
-        protected override Task ForwardMessagesToDestination(List<BrokeredMessage> messagesToForward)
+        protected override async Task ForwardMessagesToDestination(List<BrokeredMessage> messagesToForward)
         {
-            throw new NotImplementedException();
+            await client.SendBatchAsync(messagesToForward);
         }
     }
 }

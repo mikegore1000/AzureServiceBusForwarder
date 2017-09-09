@@ -23,7 +23,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
             destinationQueue = GetType().Name;
             messageForwarder = A.Fake<IMessageForwarder>();
 
-            await QueueHelper.CreateQueue(destinationQueue);
+            await MessageEntityHelper.CreateQueue(destinationQueue);
 
             namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);

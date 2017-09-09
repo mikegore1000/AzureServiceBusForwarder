@@ -11,7 +11,7 @@ namespace AzureServiceBusForwarder
     {
         private static readonly Action<BrokeredMessage> DefaultMessageMutator = (message) => { };
 
-        private readonly QueueClient sendClient;
+        protected readonly QueueClient sendClient;
         private readonly Action<BrokeredMessage> outgoingMessageMutator;
 
         protected AzureServiceBusMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator)
@@ -39,10 +39,12 @@ namespace AzureServiceBusForwarder
 
             if (messagesToForward.Any())
             {
-                await sendClient.SendBatchAsync(messagesToForward);
+                await ForwardMessagesToDestination(messagesToForward);
             }
             return lockTokens;
         }
+
+        protected abstract Task ForwardMessagesToDestination(List<BrokeredMessage> messagesToForward);
 
         public void CopyHeaders(BrokeredMessage from, BrokeredMessage to)
         {

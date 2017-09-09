@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace AzureServiceBusForwarder.Tests
 {
     [TestFixture]
-    public class AzureServiceBusMessageForwarderTests
+    public class QueueMessageForwarderTests
     {
         [Test]
         [TestCase(null)]

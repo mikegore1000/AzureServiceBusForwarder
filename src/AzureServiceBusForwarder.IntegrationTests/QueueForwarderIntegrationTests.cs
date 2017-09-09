@@ -7,9 +7,9 @@ using Microsoft.ServiceBus.Messaging;
 using NUnit.Framework;
 
 namespace AzureServiceBusForwarder.IntegrationTests
-{
+{    
     [TestFixture]
-    public class AzureServiceBusMessageForwarderIntegrationTests
+    public class QueueForwarderIntegrationTests
     {
         private QueueClient queueClient;
         private IEnumerable<Guid> returnedLockTokens;

@@ -54,7 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureServiceBusMessageForwarderIntegrationTests.cs" />
+    <Compile Include="QueueForwarderIntegrationTests.cs" />
     <Compile Include="BatchMessageReceiverIntegrationTests.cs" />
     <Compile Include="ForwarderIntegrationTests.cs" />
     <Compile Include="MessageFactory.cs" />

@@ -10,15 +10,10 @@ namespace AzureServiceBusForwarder
     public abstract class AzureServiceBusMessageForwarder : IMessageForwarder
     {
         private static readonly Action<BrokeredMessage> DefaultMessageMutator = (message) => { };
-
-        protected readonly QueueClient sendClient;
         private readonly Action<BrokeredMessage> outgoingMessageMutator;
 
-        protected AzureServiceBusMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator)
-        {
-            Guard.IsNotNull(sendClient, nameof(sendClient));
-
-            this.sendClient = sendClient;
+        protected AzureServiceBusMessageForwarder(Action<BrokeredMessage> outgoingMessageMutator)
+        {            
             this.outgoingMessageMutator = outgoingMessageMutator ?? DefaultMessageMutator;
         }
 

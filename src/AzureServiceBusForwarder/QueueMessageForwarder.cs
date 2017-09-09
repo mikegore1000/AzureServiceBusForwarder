@@ -7,8 +7,13 @@ namespace AzureServiceBusForwarder
 {
     public class QueueMessageForwarder : AzureServiceBusMessageForwarder
     {
-        public QueueMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator) : base(sendClient, outgoingMessageMutator)
+        protected readonly QueueClient sendClient;
+        
+        public QueueMessageForwarder(QueueClient sendClient, Action<BrokeredMessage> outgoingMessageMutator) : base(outgoingMessageMutator)
         {
+            Guard.IsNotNull(sendClient, nameof(sendClient));
+
+            this.sendClient = sendClient;
         }
 
         protected override async Task ForwardMessagesToDestination(List<BrokeredMessage> messagesToForward)

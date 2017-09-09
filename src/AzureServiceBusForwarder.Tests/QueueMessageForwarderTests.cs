@@ -16,7 +16,7 @@ namespace AzureServiceBusForwarder.Tests
         }
 
         [Test]
-        public void when_creating_a_message_forwarder_a_null_message_forwarder_does_not_cause_an_exception()
+        public void when_creating_a_message_forwarder_a_null_message_mutator_does_not_cause_an_exception()
         {
             new QueueMessageForwarder(QueueClient.CreateFromConnectionString("Endpoint=sb://dummyns.servicebus.windows.net/", "TestQueue"), null);
         }

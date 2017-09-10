@@ -61,6 +61,7 @@
     <Compile Include="NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueMessageForwarder.cs" />
+    <Compile Include="SubscriptionBatchMessageReceiver.cs" />
     <Compile Include="TopicMessageForwarder.cs" />
   </ItemGroup>
   <ItemGroup>

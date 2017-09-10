@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace AzureServiceBusForwarder.IntegrationTests
 {
     [TestFixture]
-    public class BatchMessageReceiverIntegrationTests
+    public class QueueBatchMessageReceiverIntegrationTests
     {
         private QueueClient queueClient;
 
@@ -25,7 +25,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         {   
             var message = await MessageFactory.CreateMessageWithJsonBody();
             
-            var receiver = new BatchMessageReceiver(queueClient);
+            var receiver = new QueueBatchMessageReceiver(queueClient);
             await queueClient.SendAsync(message);
 
             var messages = await receiver.ReceieveMessages(1);
@@ -38,7 +38,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         [Test]
         public async Task when_completing_with_empty_message_tokens_then_no_exceptions_are_thrown()
         {
-            var receiver = new BatchMessageReceiver(queueClient);
+            var receiver = new QueueBatchMessageReceiver(queueClient);
 
             await receiver.CompleteMessages(new Guid[] {});
         }

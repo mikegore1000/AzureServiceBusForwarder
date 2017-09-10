@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="QueueMessageForwarderTests.cs" />
-    <Compile Include="BatchMessageReceiverTests.cs" />
+    <Compile Include="QueueBatchMessageReceiverTests.cs" />
     <Compile Include="ForwarderConfigurationTests.cs" />
     <Compile Include="ForwarderDestinationConfigurationTests.cs" />
     <Compile Include="ForwarderSourceConfigurationTests.cs" />

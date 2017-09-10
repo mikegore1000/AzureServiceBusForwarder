@@ -4,9 +4,9 @@ namespace AzureServiceBusForwarder
 {
     internal class BatchMessageReceiverFactory
     {
-        public BatchMessageReceiver Create(QueueClient client)
+        public QueueBatchMessageReceiver Create(QueueClient client)
         {
-            return new BatchMessageReceiver(client);
+            return new QueueBatchMessageReceiver(client);
         }
     }
 }

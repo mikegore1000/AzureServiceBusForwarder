@@ -6,11 +6,11 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace AzureServiceBusForwarder
 {
-    public class BatchMessageReceiver
+    public class QueueBatchMessageReceiver : IBatchMessageReceiver
     {
         private readonly QueueClient client;
 
-        public BatchMessageReceiver(QueueClient client)
+        public QueueBatchMessageReceiver(QueueClient client)
         {
             Guard.IsNotNull(client, nameof(client));
             this.client = client;

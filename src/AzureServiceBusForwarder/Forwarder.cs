@@ -14,7 +14,7 @@ namespace AzureServiceBusForwarder
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILogger logger;
-        private readonly List<BatchMessageReceiver> messageReceivers = new List<BatchMessageReceiver>();
+        private readonly List<QueueBatchMessageReceiver> messageReceivers = new List<QueueBatchMessageReceiver>();
         private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
 
         public Forwarder(ForwarderConfiguration configuration)
@@ -59,7 +59,7 @@ namespace AzureServiceBusForwarder
             }
         }
 
-        private async Task PollMessageReceiever(BatchMessageReceiver receiver) // TODO: Support cancellation
+        private async Task PollMessageReceiever(QueueBatchMessageReceiver receiver) // TODO: Support cancellation
         {
             var stopwatch = new Stopwatch();
             var messageForwarder = this.destinationConfiguration.MessageForwarderFactory();

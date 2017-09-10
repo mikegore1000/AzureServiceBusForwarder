@@ -49,13 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureServiceBusMessageForwarder.cs" />
-    <Compile Include="BatchMessageReceiver.cs" />
+    <Compile Include="QueueBatchMessageReceiver.cs" />
     <Compile Include="BatchMessageReceiverFactory.cs" />
     <Compile Include="Forwarder.cs" />
     <Compile Include="ForwarderConfiguration.cs" />
     <Compile Include="ForwarderDestinationConfiguration.cs" />
     <Compile Include="ForwarderSourceConfiguration.cs" />
     <Compile Include="Guard.cs" />
+    <Compile Include="IBatchMessageReceiver.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IMessageForwarder.cs" />
     <Compile Include="NullLogger.cs" />

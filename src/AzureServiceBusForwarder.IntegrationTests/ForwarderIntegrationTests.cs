@@ -39,7 +39,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
 
             forwarder = new Forwarder(
                 new ForwarderConfiguration(
-                    new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, 500, () => messageReceiver),
+                    new ForwarderSourceConfiguration(500, () => messageReceiver),
                     new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder)));
         }
 

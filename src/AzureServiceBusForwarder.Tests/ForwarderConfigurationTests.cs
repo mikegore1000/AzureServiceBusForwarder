@@ -19,7 +19,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_the_configuration_the_destination_configuration_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
-                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1, A.Fake<IBatchMessageReceiver>),
+                new ForwarderSourceConfiguration(1, A.Fake<IBatchMessageReceiver>),
                 null));
         }
 
@@ -27,7 +27,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_the_configuration_and_a_logger_is_specified_then_it_is_required()
         {
             Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
-                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1, A.Fake<IBatchMessageReceiver>),
+                new ForwarderSourceConfiguration(1, A.Fake<IBatchMessageReceiver>),
                 new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
                 .UsingLogger(null));
         }
@@ -38,7 +38,7 @@ namespace AzureServiceBusForwarder.Tests
         public void when_creating_the_configuration_and_the_concurrency_is_specified_then_it_must_be_a_positive_value(int concurrency)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => new ForwarderConfiguration(
-                new ForwarderSourceConfiguration("ConnectionString", "TopicName", 1, A.Fake<IBatchMessageReceiver>),
+                new ForwarderSourceConfiguration(1, A.Fake<IBatchMessageReceiver>),
                 new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
                 .WithConcurrencyOf(concurrency));
         }

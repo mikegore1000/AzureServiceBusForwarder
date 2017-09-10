@@ -46,7 +46,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         [Test]
         public async Task when_a_forwarder_is_started_messages_are_forwarded_via_the_endpoint()
         {
-            await forwarder.CreateSubscriptionEntitiesIfRequired();
+            await CreateSubscriptionEntitiesIfRequired(namespaceConnectionString, TopicName, destinationQueue);
             forwarder.Start();
 
             var topicClient = TopicClient.CreateFromConnectionString(namespaceConnectionString, TopicName);
@@ -61,14 +61,22 @@ namespace AzureServiceBusForwarder.IntegrationTests
                 Assert.Fail("Timed out waiting for message to be forwarded");
             }
         }
-
-        [Test]
-        public async Task when_a_forwarder_creates_subscription_entities_all_required_entities_are_created()
+        
+        private async Task CreateSubscriptionEntitiesIfRequired(string namespaceConnectionString, string sourceTopic, string destinationQueue)
         {
-            await forwarder.CreateSubscriptionEntitiesIfRequired();
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
 
-            Assert.That(await namespaceManager.SubscriptionExistsAsync(TopicName, destinationQueue), Is.True);
-            Assert.That(await namespaceManager.QueueExistsAsync(destinationQueue));
+            if (!await namespaceManager.QueueExistsAsync(destinationQueue))
+            {
+                var description = new QueueDescription(destinationQueue) {SupportOrdering = false};
+                await namespaceManager.CreateQueueAsync(description);
+            }
+
+            if (!await namespaceManager.SubscriptionExistsAsync(sourceTopic, destinationQueue))
+            {
+                var description = new SubscriptionDescription(sourceTopic, destinationQueue) { ForwardTo = destinationQueue };
+                await namespaceManager.CreateSubscriptionAsync(description);
+            }
         }
     }
 }

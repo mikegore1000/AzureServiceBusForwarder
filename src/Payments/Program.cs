@@ -5,6 +5,7 @@ using AzureServiceBusForwarder;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 using NServiceBus;
 using NServiceBus.Logging;
@@ -90,8 +91,25 @@ namespace Payments
                 .WithConcurrencyOf(3);
 
             var forwarder = new Forwarder(forwarderConfig);
-            await forwarder.CreateSubscriptionEntitiesIfRequired();
+            await CreateSubscriptionEntitiesIfRequired(ordersConnectionString, "Returns", "Payments");
             forwarder.Start();
+        }
+        
+        private static async Task CreateSubscriptionEntitiesIfRequired(string ordersConnectionString, string sourceTopic, string destinationQueue)
+        {
+            var namespaceManager = NamespaceManager.CreateFromConnectionString(ordersConnectionString);
+
+            if (!await namespaceManager.QueueExistsAsync(destinationQueue))
+            {
+                var description = new QueueDescription(destinationQueue) {SupportOrdering = false};
+                await namespaceManager.CreateQueueAsync(description);
+            }
+
+            if (!await namespaceManager.SubscriptionExistsAsync(sourceTopic, destinationQueue))
+            {
+                var description = new SubscriptionDescription(sourceTopic, destinationQueue) { ForwardTo = destinationQueue };
+                await namespaceManager.CreateSubscriptionAsync(description);
+            }
         }
 
         private static readonly Dictionary<string, string> messageTypeMapper = new Dictionary<string, string>()

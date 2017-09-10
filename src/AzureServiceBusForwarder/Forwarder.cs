@@ -32,23 +32,6 @@ namespace AzureServiceBusForwarder
             Poll();
         }
 
-        public async Task CreateSubscriptionEntitiesIfRequired()
-        {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(sourceConfiguration.ConnectionString);
-
-            if (!await namespaceManager.QueueExistsAsync(destinationConfiguration.DestinationQueue))
-            {
-                var description = new QueueDescription(destinationConfiguration.DestinationQueue) {SupportOrdering = false};
-                await namespaceManager.CreateQueueAsync(description);
-            }
-
-            if (!await namespaceManager.SubscriptionExistsAsync(sourceConfiguration.TopicName, destinationConfiguration.DestinationQueue))
-            {
-                var description = new SubscriptionDescription(sourceConfiguration.TopicName, destinationConfiguration.DestinationQueue) { ForwardTo = destinationConfiguration.DestinationQueue };
-                await namespaceManager.CreateSubscriptionAsync(description);
-            }
-        }
-
         private void Poll()
         {
             foreach (var messageReceiver in messageReceivers)

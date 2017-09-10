@@ -14,8 +14,7 @@ namespace AzureServiceBusForwarder
         private readonly ForwarderSourceConfiguration sourceConfiguration;
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILogger logger;
-        private readonly List<QueueBatchMessageReceiver> messageReceivers = new List<QueueBatchMessageReceiver>();
-        private readonly BatchMessageReceiverFactory batchMessageReceiverFactory;
+        private readonly List<IBatchMessageReceiver> messageReceivers = new List<IBatchMessageReceiver>();
 
         public Forwarder(ForwarderConfiguration configuration)
         {
@@ -25,7 +24,6 @@ namespace AzureServiceBusForwarder
             this.destinationConfiguration = configuration.Destination;
             this.logger = configuration.Logger;
             this.concurrency = configuration.Concurrency;
-            this.batchMessageReceiverFactory = new BatchMessageReceiverFactory();
         }
 
         public void Start()
@@ -59,7 +57,7 @@ namespace AzureServiceBusForwarder
             }
         }
 
-        private async Task PollMessageReceiever(QueueBatchMessageReceiver receiver) // TODO: Support cancellation
+        private async Task PollMessageReceiever(IBatchMessageReceiver receiver) // TODO: Support cancellation
         {
             var stopwatch = new Stopwatch();
             var messageForwarder = this.destinationConfiguration.MessageForwarderFactory();
@@ -89,8 +87,7 @@ namespace AzureServiceBusForwarder
         {
             for (int i = 0; i < concurrency; i++)
             {
-                var client = QueueClient.CreateFromConnectionString(sourceConfiguration.ConnectionString, destinationConfiguration.DestinationQueue);
-                messageReceivers.Add(batchMessageReceiverFactory.Create(client));
+                messageReceivers.Add(sourceConfiguration.MessageReceiverFactory());
             }
         }
     }

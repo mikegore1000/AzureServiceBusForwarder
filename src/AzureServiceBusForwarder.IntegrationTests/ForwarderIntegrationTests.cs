@@ -15,17 +15,19 @@ namespace AzureServiceBusForwarder.IntegrationTests
         private string namespaceConnectionString;
         private NamespaceManager namespaceManager;
         private Forwarder forwarder;
+        private IBatchMessageReceiver messageReceiver;
 
 
         [SetUp]
         public async Task Setup()
         {
+            namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
             destinationQueue = GetType().Name;
             messageForwarder = A.Fake<IMessageForwarder>();
+            messageReceiver = new QueueBatchMessageReceiver(QueueClient.CreateFromConnectionString(namespaceConnectionString, destinationQueue));
 
             await MessageEntityHelper.CreateQueue(destinationQueue);
-
-            namespaceConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
+            
             namespaceManager = NamespaceManager.CreateFromConnectionString(namespaceConnectionString);
 
             if (await namespaceManager.TopicExistsAsync(TopicName))
@@ -37,7 +39,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
 
             forwarder = new Forwarder(
                 new ForwarderConfiguration(
-                    new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, receiveBatchSize: 500),
+                    new ForwarderSourceConfiguration(namespaceConnectionString, TopicName, 500, () => messageReceiver),
                     new ForwarderDestinationConfiguration(destinationQueue, () => messageForwarder)));
         }
 

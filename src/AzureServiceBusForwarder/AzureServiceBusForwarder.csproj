@@ -50,7 +50,6 @@
   <ItemGroup>
     <Compile Include="AzureServiceBusMessageForwarder.cs" />
     <Compile Include="QueueBatchMessageReceiver.cs" />
-    <Compile Include="BatchMessageReceiverFactory.cs" />
     <Compile Include="Forwarder.cs" />
     <Compile Include="ForwarderConfiguration.cs" />
     <Compile Include="ForwarderDestinationConfiguration.cs" />

@@ -11,6 +11,5 @@ namespace AzureServiceBusForwarder.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new QueueBatchMessageReceiver(null));
         }
-        }
     }
 }

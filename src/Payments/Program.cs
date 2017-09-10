@@ -84,7 +84,7 @@ namespace Payments
             var endpoint = await Endpoint.Start(endpointConfig).ConfigureAwait(false);
 
             var forwarderConfig = new ForwarderConfiguration(
-                    new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500),
+                    new ForwarderSourceConfiguration(ordersConnectionString, "Returns", 500, () => CreateMessageReceiver(ordersConnectionString, "Payments")),
                     new ForwarderDestinationConfiguration("Payments", () => CreateMessageForwarder(paymentsConnectionString, "Payments")))
                 .UsingLogger(new Logger(LogManager.GetLogger<Forwarder>()))
                 .WithConcurrencyOf(3);
@@ -98,6 +98,12 @@ namespace Payments
         {
             {"Orders.Events.OrderAccepted", "Orders.Events.OrderAccepted, Payments"}
         };
+
+        private static IBatchMessageReceiver CreateMessageReceiver(string ordersConnectionString, string sourceQueue)
+        {
+            return new QueueBatchMessageReceiver(
+                QueueClient.CreateFromConnectionString(ordersConnectionString, sourceQueue));
+        }
 
         private static IMessageForwarder CreateMessageForwarder(string paymentsConnectionString, string destinationQueue)
         {

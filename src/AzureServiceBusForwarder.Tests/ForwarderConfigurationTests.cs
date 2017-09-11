@@ -42,5 +42,14 @@ namespace AzureServiceBusForwarder.Tests
                 new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
                 .WithConcurrencyOf(concurrency));
         }
+
+        [Test]
+        public void when_creating_the_configuration_and_a_metrics_handler_is_provided_then_it_is_required()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ForwarderConfiguration(
+                    new ForwarderSourceConfiguration(1, A.Fake<IBatchMessageReceiver>),
+                    new ForwarderDestinationConfiguration("DestinationQueue", A.Fake<IMessageForwarder>))
+                .UsingMetrics(null));
+        }
     }
 }

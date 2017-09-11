@@ -1,4 +1,7 @@
-﻿namespace AzureServiceBusForwarder
+﻿using System;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
+
+namespace AzureServiceBusForwarder
 {
     public class ForwarderConfiguration
     {
@@ -18,6 +21,8 @@
         internal ILogger Logger { get; private set; } = new NullLogger();
 
         internal int Concurrency { get; private set; } = 1;
+        
+        internal Action<Metric> MetricHander { get; private set; }
 
 
         public ForwarderConfiguration UsingLogger(ILogger logger)
@@ -31,6 +36,13 @@
         {
             Guard.IsGreaterThan(0, concurrency, nameof(concurrency));
             Concurrency = concurrency;
+            return this;
+        }
+
+        public ForwarderConfiguration UsingMetrics(Action<Metric> metricHandler)
+        {
+            Guard.IsNotNull(metricHandler, nameof(metricHandler));
+            MetricHander = metricHandler;
             return this;
         }
     }

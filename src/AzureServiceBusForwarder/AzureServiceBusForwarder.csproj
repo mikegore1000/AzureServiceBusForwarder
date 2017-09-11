@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureServiceBusMessageForwarder.cs" />
+    <Compile Include="Metric.cs" />
     <Compile Include="QueueBatchMessageReceiver.cs" />
     <Compile Include="Forwarder.cs" />
     <Compile Include="ForwarderConfiguration.cs" />

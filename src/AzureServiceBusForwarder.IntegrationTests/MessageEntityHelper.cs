@@ -33,7 +33,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         
         private static NamespaceManager CreateNamespaceManager()
         {
-            var connectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
+            var connectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.Process);
             var manageClient = NamespaceManager.CreateFromConnectionString(connectionString);
             return manageClient;
         }

@@ -20,7 +20,7 @@ namespace Orders
         {
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
 
-            connectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.User);
+            connectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.Process);
             topicClient = TopicClient.CreateFromConnectionString(connectionString, TopicName);
 
             MainAsync().Wait();

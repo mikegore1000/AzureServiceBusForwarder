@@ -25,10 +25,10 @@ namespace Payments
 
         private static async Task MainAsync()
         {
-            var instrumentationKey = Environment.GetEnvironmentVariable("Payments.InstrumentationKey", EnvironmentVariableTarget.User);
-            var license = Environment.GetEnvironmentVariable("NServiceBus.License", EnvironmentVariableTarget.User);
-            var ordersConnectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.User);
-            var paymentsConnectionString = Environment.GetEnvironmentVariable("Payments.ConnectionString", EnvironmentVariableTarget.User);
+            var instrumentationKey = Environment.GetEnvironmentVariable("Payments.InstrumentationKey", EnvironmentVariableTarget.Process);
+            var license = Environment.GetEnvironmentVariable("NServiceBus.License", EnvironmentVariableTarget.Process);
+            var ordersConnectionString = Environment.GetEnvironmentVariable("Orders.ConnectionString", EnvironmentVariableTarget.Process);
+            var paymentsConnectionString = Environment.GetEnvironmentVariable("Payments.ConnectionString", EnvironmentVariableTarget.Process);
 
             System.Net.ServicePointManager.DefaultConnectionLimit = Int32.MaxValue;
 

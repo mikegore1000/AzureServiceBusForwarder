@@ -20,7 +20,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         {
             string destinationQueue = GetType().Name;
             await MessageEntityHelper.CreateQueue(destinationQueue);
-            var connectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
+            var connectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.Process);
             queueClient = QueueClient.CreateFromConnectionString(connectionString, destinationQueue);
         }
 

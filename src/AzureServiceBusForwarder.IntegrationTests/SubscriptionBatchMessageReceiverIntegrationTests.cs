@@ -17,7 +17,7 @@ namespace AzureServiceBusForwarder.IntegrationTests
         {
             string destinationTopic = GetType().Name;
             await MessageEntityHelper.CreateTopicWithSubscription(destinationTopic);
-            var topicConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.User);
+            var topicConnectionString = Environment.GetEnvironmentVariable("NServiceBus.AzureServiceBusForwarder.ConnectionString", EnvironmentVariableTarget.Process);
             topicClient = TopicClient.CreateFromConnectionString(topicConnectionString, destinationTopic);
             subscriptionClient = SubscriptionClient.CreateFromConnectionString(topicConnectionString, destinationTopic, destinationTopic);
         }

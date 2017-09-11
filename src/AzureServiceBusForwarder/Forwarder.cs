@@ -15,6 +15,7 @@ namespace AzureServiceBusForwarder
         private readonly ForwarderDestinationConfiguration destinationConfiguration;
         private readonly ILogger logger;
         private readonly List<IBatchMessageReceiver> messageReceivers = new List<IBatchMessageReceiver>();
+        private readonly Action<Metric> metricHandler;
 
         public Forwarder(ForwarderConfiguration configuration)
         {
@@ -24,6 +25,7 @@ namespace AzureServiceBusForwarder
             this.destinationConfiguration = configuration.Destination;
             this.logger = configuration.Logger;
             this.concurrency = configuration.Concurrency;
+            this.metricHandler = configuration.MetricHander;
         }
 
         public void Start()
@@ -51,17 +53,19 @@ namespace AzureServiceBusForwarder
                 {
                     stopwatch.Restart();
                     var messages = (await receiver.ReceieveMessages(sourceConfiguration.ReceiveBatchSize).ConfigureAwait(false)).ToArray();
-                    logger.Info($"Received {messages.Length} messages from the source. Took {stopwatch.Elapsed}");
+                    logger.Debug($"Received {messages.Length} messages from the source. Took {stopwatch.Elapsed}");
                     stopwatch.Restart();
                     var sentMessageTokens = (await messageForwarder.ForwardMessages(messages).ConfigureAwait(false)).ToArray();
-                    logger.Info($"Forwarded {sentMessageTokens.Length} messages to the destination. Took {stopwatch.Elapsed}");
+                    logger.Debug($"Forwarded {sentMessageTokens.Length} messages to the destination. Took {stopwatch.Elapsed}");
                     stopwatch.Restart();
                     await receiver.CompleteMessages(sentMessageTokens).ConfigureAwait(false);
-                    logger.Info($"Completed {sentMessageTokens.Length} messages at the source. Took {stopwatch.Elapsed}");
+                    logger.Debug($"Completed {sentMessageTokens.Length} messages at the source. Took {stopwatch.Elapsed}");
+                    metricHandler(new Metric("Forwarded messages", sentMessageTokens.Length));
                 }
                 catch (Exception e)
                 {
                     logger.Error(e.Message, e);
+                    metricHandler(new Metric("Exceptions thrown", 1));
                 }
             }
         }

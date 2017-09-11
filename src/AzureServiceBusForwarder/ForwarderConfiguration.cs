@@ -21,9 +21,8 @@ namespace AzureServiceBusForwarder
         internal ILogger Logger { get; private set; } = new NullLogger();
 
         internal int Concurrency { get; private set; } = 1;
-        
-        internal Action<Metric> MetricHander { get; private set; }
 
+        internal Action<Metric> MetricHander { get; private set; } = m => { };
 
         public ForwarderConfiguration UsingLogger(ILogger logger)
         {

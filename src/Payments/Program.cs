@@ -146,7 +146,7 @@ namespace Payments
                 this.logger = logger;
             }
 
-            public void Info(string message)
+            public void Debug(string message)
             {
                 logger.Info(message);
             }

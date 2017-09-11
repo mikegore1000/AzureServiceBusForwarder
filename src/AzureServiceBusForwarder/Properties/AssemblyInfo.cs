@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NServiceBus.AzureServiceBusForwarder")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AzureServiceBusForwarder")]
+[assembly: AssemblyDescription("Library that enables messages to be forwarded from one namespace to another")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("NServiceBus.AzureServiceBusForwarder")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
+[assembly: AssemblyProduct("AzureServiceBusForwarder")]
+[assembly: AssemblyCopyright("Copyright © Mike Gore 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
